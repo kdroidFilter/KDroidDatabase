@@ -1,9 +1,0 @@
-{
-  "type": "Fixed",
-  "packageName": "com.provisiontwo.isr",
-  "category": "VIDEO",
-  "networkPolicy": {
-    "mode": "FULL_OPEN"
-  },
-  "minimumVersionCode": 0
-}
