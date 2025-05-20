@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.provisiontwo.isr",
+  "category": "tools",
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "minimumVersionCode": 0
+}
