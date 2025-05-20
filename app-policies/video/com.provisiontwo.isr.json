@@ -1,7 +1,7 @@
 {
   "type": "Fixed",
   "packageName": "com.provisiontwo.isr",
-  "category": "VIDEO",
+  "category": "tools",
   "networkPolicy": {
     "mode": "FULL_OPEN"
   },
