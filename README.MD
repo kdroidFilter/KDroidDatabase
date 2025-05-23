@@ -28,8 +28,8 @@ AppPolicy
 │   ├── "type": "ModeBased"
 │   ├── modePolicies
 │   │   ├── OFFLINE → NetworkPolicy{…}
-│   │   ├── GPS_ONLY → NetworkPolicy{…}
-│   │   ├── GPS_AND_MAIL → NetworkPolicy{…}
+│   │   ├── NAVIGATION_ONLY → NetworkPolicy{…}
+│   │   ├── NAVIGATION_AND_MAIL_ONLY → NetworkPolicy{…}
 │   │   ├── REDUCED_RISK → NetworkPolicy{…}
 │   │   └── MOST_OPEN → NetworkPolicy{…}
 │   └── detectionRules […]
@@ -109,7 +109,7 @@ Use when you need different rules per user mode.
   "category": "MAIL",
   "minimumVersionCode": 0,
   "modePolicies": {
-    "GPS_AND_MAIL": {
+    "NAVIGATION_AND_MAIL_ONLY": {
       "mode": "BLACKLIST",
       "desc": "Allow only mails and block Google Chat",
       "spec": {
