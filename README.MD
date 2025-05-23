@@ -252,6 +252,24 @@ Apps marked with any of these flags will only appear in the store or receive int
 
 ---
 
+### Why would an app require Play Store installation?
+
+Some applications must be installed exclusively from the Google Play Store for several important reasons:
+
+1. **License Verification**: Many paid or subscription-based apps use Google Play's licensing services to verify purchases. When installed from alternative sources, these apps may not function properly as they cannot validate the purchase.
+
+2. **App Integrity & Security**: The Play Store provides app signing and verification mechanisms that help ensure the app hasn't been tampered with. Apps handling sensitive data (like banking or payment apps) often require this security layer.
+
+3. **Google Play Services Dependencies**: Some apps rely heavily on specific Google Play Services features that are only fully available for apps installed through official channels.
+
+4. **In-App Purchases**: Applications that offer in-app purchases typically use Google Play's billing system, which may not function correctly when the app is sideloaded.
+
+5. **Auto-Updates**: Apps installed from the Play Store can receive automatic updates, ensuring users always have the latest security patches and features.
+
+When you mark an app with `requiresPlayStoreInstallation: true`, you're indicating to users that the app should not be sideloaded from alternative sources, as this could lead to functionality issues, security risks, or licensing problems.
+
+---
+
 ### 🔄 Example: Risky Applications
 
 #### 1. Bank App with Inappropriate Visuals
