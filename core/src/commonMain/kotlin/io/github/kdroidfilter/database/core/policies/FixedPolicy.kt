@@ -14,6 +14,7 @@ data class FixedPolicy(
     override val category: AppCategory,
     val networkPolicy: NetworkPolicy,
     override val minimumVersionCode: Int,
+    override val requiresPlayStoreInstallation: Boolean = false,
     override val hasUnmodestImage: Boolean = false,
     override val isPotentiallyDangerous: Boolean = false,
     override val detectionRules: List<DetectionRule> = emptyList()
