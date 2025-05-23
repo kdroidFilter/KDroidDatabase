@@ -5,5 +5,6 @@
   "networkPolicy": {
     "mode": "FULL_OPEN"
   },
-  "minimumVersionCode": 0
+  "minimumVersionCode": 0,
+  "requiresPlayStoreInstallation": true
 }

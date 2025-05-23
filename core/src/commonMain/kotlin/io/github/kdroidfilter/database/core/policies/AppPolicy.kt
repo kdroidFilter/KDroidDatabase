@@ -10,8 +10,10 @@ sealed interface AppPolicy {
     val category: AppCategory
     val minimumVersionCode: Int
 
+    val requiresPlayStoreInstallation: Boolean
     val hasUnmodestImage : Boolean
     val isPotentiallyDangerous : Boolean
+
     val detectionRules: List<DetectionRule>
 }
 
