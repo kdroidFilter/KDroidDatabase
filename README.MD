@@ -244,9 +244,11 @@ You can optionally include the following boolean flags in your policy files to h
 
 * **`isPotentiallyDangerous`**: Set to `true` if the app can pose a technical or security risk, such as remote access tools or apps capable of controlling other devices over open internet connections. This flag helps apply stricter rules or prompt additional warnings.
 
+* **`requiresPlayStoreInstallation`**: Set to `true` if the app must be installed from the Google Play Store for specific reasons (e.g., licensing requirements, app integrity verification, or access to Play Store-specific features). This indicates that the app should not be sideloaded from alternative sources.
+
 These fields are optional but enforced by default: apps with these flags will not appear in the store or be granted internet access unless the user has explicitly accepted the associated risk.
 
-Apps marked with either of these flags will only appear in the store or receive internet access **if the user has explicitly acknowledged the risk** and chosen to enable them manually.
+Apps marked with any of these flags will only appear in the store or receive internet access **if the user has explicitly acknowledged the risk** and chosen to enable them manually.
 
 ---
 
@@ -282,4 +284,19 @@ Apps marked with either of these flags will only appear in the store or receive 
 }
 ```
 
-Both of these apps are tagged for additional caution. They will only be functional or visible if the user has agreed to unlock them by accepting the risks.
+#### 3. App Requiring Play Store Installation
+
+```json
+{
+  "type": "Fixed",
+  "packageName": "com.example.licensedapp",
+  "category": "PRODUCTIVITY",
+  "minimumVersionCode": 75,
+  "requiresPlayStoreInstallation": true,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  }
+}
+```
+
+All of these apps are tagged for additional caution. They will only be functional or visible if the user has agreed to unlock them by accepting the risks.
