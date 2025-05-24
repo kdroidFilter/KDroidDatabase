@@ -1,1 +1,19 @@
-
+{
+  "type": "Fixed",
+  "packageName": "com.android.settings",
+  "category": "SYSTEM",
+  "networkPolicy": {
+    "mode": "BLACKLIST",
+    "spec": {
+      "type": "HostList",
+      "hosts": [
+        "samsung.com",
+        "policies.google.com",
+        "api.samsungconsent.com", 
+        "terms.samsungconsent.com", 
+        "policies.account.samsung.com"
+      ]
+    }
+  },
+  "minimumVersionCode": 1030416
+}
