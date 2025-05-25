@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "org.localsend.localsend_app",
+  "category": "TOOLS",
+  "networkPolicy": {
+    "mode": "LOCAL_ONLY"
+  },
+  "minimumVersionCode": 0
+}

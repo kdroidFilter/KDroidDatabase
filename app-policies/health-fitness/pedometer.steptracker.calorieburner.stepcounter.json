@@ -1,0 +1,10 @@
+{
+  "type": "Fixed",
+  "packageName": "pedometer.steptracker.calorieburner.stepcounter",
+  "category": "HEALTH_FITNESS",
+  "minimumVersionCode": 0,
+  "hasUnmodestImage": true,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  }
+}

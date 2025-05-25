@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.miui.weather2",
+  "category": "TOOLS",
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "minimumVersionCode": 0
+}
