@@ -12,8 +12,7 @@ The KDroid app store dynamically adapts its application listings based on the cu
 
 For applications using a **ModeBasedPolicy**, if a rule is defined for a lower level (e.g. 1 or 2), any higher levels (3, 4, or 5) without an explicit configuration will automatically inherit that rule.
 
-Here is a simple tree of all available modes :
----
+## Here is a simple tree of all available modes :
 
 ```text
 AppPolicy
@@ -246,7 +245,7 @@ You can optionally include the following boolean flags in your policy files to h
 
 * **`requiresPlayStoreInstallation`**: Set to `true` if the app must be installed from the Google Play Store for specific reasons (e.g., licensing requirements, app integrity verification, or access to Play Store-specific features). This indicates that the app should not be sideloaded from alternative sources.
 
-These fields are optional but enforced by default: apps with these flags will not appear in the store or be granted internet access unless the user has explicitly accepted the associated risk.
+These fields are optional but enforced by default: apps with these flags will not appear in the store or be granted internet access unless the user has explicitly accepted the risk. Additionally, apps with `hasUnmodestImage` or `isPotentiallyDangerous` set to `true` will be excluded from the **REDUCED\_RISK** mode.
 
 Apps marked with any of these flags will only appear in the store or receive internet access **if the user has explicitly acknowledged the risk** and chosen to enable them manually.
 
@@ -319,6 +318,8 @@ When you mark an app with `requiresPlayStoreInstallation: true`, you're indicati
 
 All of these apps are tagged for additional caution. They will only be functional or visible if the user has agreed to unlock them by accepting the risks.
 
+---
+
 ## Importing the Core Module
 
 If you want to use the core module in your own project, you can add it as a dependency:
@@ -328,4 +329,4 @@ If you want to use the core module in your own project, you can add it as a depe
 dependencies {
     implementation("io.github.kdroidfilter.database:core:0.1.0")
 }
-````
+```
