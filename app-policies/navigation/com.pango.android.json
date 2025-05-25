@@ -7,7 +7,8 @@
     "spec": {
       "type": "HostList",
       "hosts": [
-        "*.pango.co.il"
+        "*.pango.co.il",
+        "bit.ly"
       ]
     }
   },
