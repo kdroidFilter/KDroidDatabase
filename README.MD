@@ -5,8 +5,8 @@ Welcome to the community-driven database of kosher filtering rules for applicati
 The KDroid app store dynamically adapts its application listings based on the current **UserMode** (levels 0 to 5) to only show apps that are appropriate for each level:
 
 * In **OFFLINE** (0) or **LOCAL\_ONLY** (1) modes, only updates for already installed apps that can work offline will be shown.
-* In **GPS\_ONLY** mode (2), only apps in the **NAVIGATION** category will be visible.
-* In **GPS\_AND\_MAIL** mode (3), apps in the **MAIL** category will also be included.
+* In **NAVIGATION\_ONLY** mode (2), only apps in the **NAVIGATION** category will be visible.
+* In **NAVIGATION\_AND\_MAIL\_ONLY** mode (3), apps in the **MAIL** category will also be included.
 * In **REDUCED\_RISK** mode (4), only apps from trusted categories will appear: **TORAH**, **PRODUCTIVITY**, **TOOLS**, **FINANCE**, **MUSIC\_AUDIO**, and **HOME**.
 * Finally, in **MOST\_OPEN** mode (5), all available apps will be listed.
 
@@ -318,3 +318,14 @@ When you mark an app with `requiresPlayStoreInstallation: true`, you're indicati
 ```
 
 All of these apps are tagged for additional caution. They will only be functional or visible if the user has agreed to unlock them by accepting the risks.
+
+## Importing the Core Module
+
+If you want to use the core module in your own project, you can add it as a dependency:
+
+```kotlin
+
+dependencies {
+    implementation("io.github.kdroidfilter.database:core:0.1.0")
+}
+````
