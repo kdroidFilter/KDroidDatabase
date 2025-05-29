@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.noegcoil.theorystudy",
+  "category": "EDUCATION",
+  "minimumVersionCode": 0,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  }
+}
