@@ -1,6 +1,6 @@
 {
   "type": "Fixed",
-  "packageName": "com.pango.android",
+  "packageName": "com.unicell.pangoandroid",
   "category": "NAVIGATION",
   "networkPolicy": {
     "mode": "BLACKLIST",
