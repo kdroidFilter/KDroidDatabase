@@ -20,6 +20,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kermit)
             implementation(libs.gplay.scrapper)
+            implementation(libs.platform.tools.release.fetcher)
         }
 
         commonTest.dependencies {

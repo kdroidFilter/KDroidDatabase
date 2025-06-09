@@ -10,7 +10,7 @@ compose = "1.8.0"
 androidx-activityCompose = "1.10.1"
 mavenSlf4jProvider = "3.9.9"
 sqliteJdbc = "3.45.2.0"
-
+platformtools = "0.3.3"
 [libraries]
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -25,6 +25,7 @@ androidx-activityCompose = { module = "androidx.activity:activity-compose", vers
 maven-slf4j-provider = { module = "org.apache.maven:maven-slf4j-provider", version.ref = "mavenSlf4jProvider" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
 gplay-scrapper = { module = "io.github.kdroidfilter:gplayscrapper ", version = "0.2.0"}
+platform-tools-release-fetcher = {module = "io.github.kdroidfilter:platformtools.releasefetcher", version.ref = "platformtools"}
 
 [plugins]
 
