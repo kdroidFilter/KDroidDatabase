@@ -30,5 +30,6 @@ dependencyResolutionManagement {
 }
 include(":core")
 include(":generator")
+include(":storegenerator")
 include(":sample:composeApp")
 
