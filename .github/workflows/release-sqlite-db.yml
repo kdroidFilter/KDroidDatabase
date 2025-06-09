@@ -1,4 +1,4 @@
-name: Release – SQLite DB
+name: Release – SQLite DBs (Policies & Store)
 
 on:
   push:
@@ -35,13 +35,21 @@ jobs:
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*','**/gradle-wrapper.properties') }}
 
-      - name: Build project and export SQLite DB
+      - name: Build project and export SQLite DBs
         run: |
+          # Build and export policies database
           ./gradlew :generator:build --quiet
           ./gradlew :generator:jvmRun \
             -DmainClass=io.github.kdroidfilter.database.generator.SqlLiteExtractorKt \
             --quiet
           ls -l generator/build/policies.db
+
+          # Build and export store database
+          ./gradlew :storegenerator:build --quiet
+          ./gradlew :storegenerator:jvmRun \
+            -DmainClass=io.github.kdroidfilter.database.storegenerator.SqliteStoreBuilderKt \
+            --quiet
+          ls -l storegenerator/build/store-database.db
 
       - name: Define release name
         id: relname
@@ -55,9 +63,11 @@ jobs:
           git tag "${{ env.RELEASE_NAME }}" "${{ github.sha }}"
           git push origin "${{ env.RELEASE_NAME }}"
 
-      - name: Create GitHub release and upload artifact
+      - name: Create GitHub release and upload artifacts
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.RELEASE_NAME }}
           name: ${{ env.RELEASE_NAME }}
-          files: generator/build/policies.db
+          files: |
+            generator/build/policies.db
+            storegenerator/build/store-database.db
