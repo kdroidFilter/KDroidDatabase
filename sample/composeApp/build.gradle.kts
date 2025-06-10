@@ -29,26 +29,26 @@ kotlin {
             implementation(project(":core"))
             implementation(libs.kermit)
             implementation(libs.kotlinx.serialization.json)
-            implementation("io.github.kdroidfilter:gplayscrapper-core:0.3.1")
+            implementation(libs.gplay.scrapper.core)
 
             implementation(libs.ktor.client.core)
             implementation(libs.platform.tools.release.fetcher)
-            implementation("io.coil-kt.coil3:coil-compose:3.1.0")
-            implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.okhttp)
         }
 
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation("app.cash.sqldelight:sqlite-driver:2.1.0")
+            implementation(libs.sqldelight.sqlite.driver)
 
         }
 
         androidMain.dependencies {
             implementation(libs.androidx.activityCompose)
-            implementation("app.cash.sqldelight:android-driver:2.1.0")
+            implementation(libs.sqldelight.android.driver)
             implementation(libs.kotlinx.coroutines.android)
-            implementation("io.github.kdroidfilter:netfreetools.certificates:1.0.1")
+            implementation(libs.netfreetools.certificates)
 
         }
 
