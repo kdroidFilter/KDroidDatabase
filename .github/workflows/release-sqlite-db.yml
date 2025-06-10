@@ -64,7 +64,8 @@ jobs:
           git push origin "${{ env.RELEASE_NAME }}"
 
       - name: Create GitHub release and upload artifacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.1.0
+
         with:
           tag_name: ${{ env.RELEASE_NAME }}
           name: ${{ env.RELEASE_NAME }}
