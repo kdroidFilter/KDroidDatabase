@@ -1,6 +1,8 @@
 package sample.app
 
+import app.cash.sqldelight.db.SqlDriver
 import co.touchlab.kermit.Logger
+import io.github.kdroidfilter.database.sample.Database
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,22 +38,44 @@ object DatabaseManager {
     }
 
     /**
-     * Downloads the latest database from GitHub releases, replacing any existing database.
-     * @return true if download was successful, false otherwise
+     * Downloads the latest database from GitHub releases, replacing any existing database
+     * only if the current version is different from the latest release.
+     * @return true if download was successful or database is already up to date, false otherwise
      */
     suspend fun refreshDatabase(): Boolean = withContext(Dispatchers.IO) {
         try {
             val dbPath = getDatabasePath()
-            logger.i { "🔄 Attempting to download the latest database..." }
+            logger.i { "🔄 Checking for database updates..." }
 
             val fetcher = GitHubReleaseFetcher(owner = "kdroidFilter", repo = "KDroidDatabase")
             val latestRelease = fetcher.getLatestRelease()
 
             if (latestRelease != null && latestRelease.assets.size > 1) {
+                // Check current database version
+                val dbFile = dbPath.toFile()
+                val dbExists = dbFile.exists() && dbFile.length() > 30000
+
+                if (dbExists) {
+                    try {
+                        // Create database instance to check version
+                        val database = Database(createSqlDriver())
+                        val currentVersion = database.storeQueries.getCurrentVersion().executeAsOneOrNull()
+
+                        // If current version matches latest release, no need to download
+                        if (currentVersion != null && currentVersion.release_name == latestRelease.name) {
+                            logger.i { "✅ Database is already the most recent version (${latestRelease.name})" }
+                            return@withContext true
+                        }
+                    } catch (e: Exception) {
+                        logger.w(e) { "⚠️ Could not check current database version: ${e.message}" }
+                        // Continue with download if we can't check the version
+                    }
+                }
+
                 // Find the store-database.db asset
                 val downloadUrl = latestRelease.assets[1].browser_download_url
 
-                logger.i { "📥 Downloading database from: $downloadUrl" }
+                logger.i { "📥 Downloading database version ${latestRelease.name} from: $downloadUrl" }
 
                 Files.createDirectories(dbPath.parent)
 
@@ -61,8 +85,7 @@ object DatabaseManager {
                 }
 
                 // Verify the file was downloaded successfully
-                val dbFile = dbPath.toFile()
-                if (dbFile.exists() && dbFile.length() > 1024) { // Ensure it's at least 1KB
+                if (dbFile.exists() && dbFile.length() > 30000) { // Ensure it's at least 30KB
                     logger.i { "✅ Database downloaded successfully to $dbPath" }
                     return@withContext true
                 } else {
