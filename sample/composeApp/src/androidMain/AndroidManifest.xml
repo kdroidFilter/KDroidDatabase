@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.github.kdroidfilter.database.sample">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
-            android:icon="@android:mipmap/sym_def_app_icon"
-            android:label="sample"
-            android:theme="@android:style/Theme.Material.NoActionBar">
+        android:allowBackup="true"
+        android:icon="@android:drawable/ic_menu_search"
+        android:label="KDroid Database"
+        android:roundIcon="@android:drawable/ic_menu_search"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
-            android:name=".AppActivity"
+            android:name="sample.app.AppActivity"
+            android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:launchMode="singleInstance"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

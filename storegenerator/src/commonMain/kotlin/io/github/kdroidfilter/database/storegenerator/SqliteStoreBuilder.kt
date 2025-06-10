@@ -6,9 +6,7 @@ import io.github.kdroidfilter.database.core.AppCategory
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import java.io.FileOutputStream
 import java.net.URL
-import java.nio.channels.Channels
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption

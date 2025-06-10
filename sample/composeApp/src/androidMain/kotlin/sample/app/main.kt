@@ -8,6 +8,10 @@ import androidx.activity.enableEdgeToEdge
 class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize the application context for database access
+        initializeContext(this)
+
         enableEdgeToEdge()
         setContent { App() }
     }
