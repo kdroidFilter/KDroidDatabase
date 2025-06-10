@@ -82,7 +82,7 @@ fun App() {
                 logger.w { "⚠️ Could not download the database, will try to use existing one if available" }
             }
 
-            withContext(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
                 val pkgs = database.storeQueries.getAllPackages()
                     .executeAsList()
                     .map {
