@@ -1,6 +1,5 @@
 package sample.app
 
-import app.cash.sqldelight.db.SqlDriver
 import co.touchlab.kermit.Logger
 import io.github.kdroidfilter.database.sample.Database
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
@@ -8,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 
 /**
@@ -73,11 +71,12 @@ object DatabaseManager {
                 }
 
                 // Find the store-database.db asset
-                val downloadUrl = latestRelease.assets[1].browser_download_url
+                val downloadUrl = latestRelease.assets.find { it.name == "store-database.db" }?.browser_download_url
 
                 logger.i { "📥 Downloading database version ${latestRelease.name} from: $downloadUrl" }
 
                 Files.createDirectories(dbPath.parent)
+
 
                 // Download the file
                 URL(downloadUrl).openStream().use { input ->
