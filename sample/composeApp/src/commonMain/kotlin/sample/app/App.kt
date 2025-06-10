@@ -56,10 +56,9 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import java.nio.file.Path
 
 expect fun createSqlDriver(): SqlDriver
-expect fun getDatabasePath(): Path
+expect fun getDatabasePath(): String
 expect fun getDeviceLanguage(): String
 
 @OptIn(ExperimentalMaterial3Api::class)

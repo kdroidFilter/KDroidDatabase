@@ -3,12 +3,11 @@ package sample.app
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import io.github.kdroidfilter.database.sample.Database
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Locale
 
 actual fun createSqlDriver(): SqlDriver {
-    val dbPath = getDatabasePath()
+    val dbPath = Paths.get(getDatabasePath())
     val driver = JdbcSqliteDriver("jdbc:sqlite:${dbPath.toAbsolutePath()}")
 
     // Create tables if they don't exist
@@ -17,7 +16,7 @@ actual fun createSqlDriver(): SqlDriver {
     return driver
 }
 
-actual fun getDatabasePath(): Path {
+actual fun getDatabasePath(): String {
     // Use a path in the user's home directory
     val userHome = System.getProperty("user.home")
     val dbDir = Paths.get(userHome, ".kdroidfilter")
@@ -27,7 +26,7 @@ actual fun getDatabasePath(): Path {
         dbDir.toFile().mkdirs()
     }
 
-    return dbDir.resolve("store-database.db")
+    return dbDir.resolve("store-database.db").toString()
 }
 
 actual fun getDeviceLanguage(): String {

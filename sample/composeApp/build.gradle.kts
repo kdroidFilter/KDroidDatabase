@@ -15,10 +15,10 @@ kotlin {
 
     jvm()
     androidTarget()
-//    wasmJs {
-//        browser()
-//        binaries.executable()
-//    }
+    wasmJs {
+        browser()
+        binaries.executable()
+    }
 
     sourceSets {
         commonMain.dependencies {

@@ -4,7 +4,6 @@ import android.content.Context
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import io.github.kdroidfilter.database.sample.Database
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Locale
 import androidx.compose.ui.platform.LocalContext
@@ -26,9 +25,9 @@ actual fun createSqlDriver(): SqlDriver {
     return driver
 }
 
-actual fun getDatabasePath(): Path {
+actual fun getDatabasePath(): String {
     val databaseFile = applicationContext.getDatabasePath("store-database.db")
-    return Paths.get(databaseFile.absolutePath)
+    return Paths.get(databaseFile.absolutePath).toString()
 }
 
 actual fun getDeviceLanguage(): String {
