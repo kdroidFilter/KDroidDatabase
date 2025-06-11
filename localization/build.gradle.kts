@@ -30,7 +30,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
-            implementation(project(":core"))
+            api(project(":core"))
         }
 
         commonTest.dependencies {
