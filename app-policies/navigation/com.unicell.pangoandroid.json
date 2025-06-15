@@ -12,5 +12,6 @@
       ]
     }
   },
-  "minimumVersionCode": 110603
+  "minimumVersionCode": 110603,
+  "isRecommendedInStore": true
 }

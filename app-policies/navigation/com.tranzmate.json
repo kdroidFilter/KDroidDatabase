@@ -13,5 +13,6 @@
       ]
     }
   },
-  "minimumVersionCode": 593
+  "minimumVersionCode": 593,
+  "isRecommendedInStore": true
 }
