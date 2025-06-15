@@ -1,5 +1,3 @@
-package io.github.kdroidfilter.database.generator
-
 import io.github.kdroidfilter.database.core.ModeSpec
 import io.github.kdroidfilter.database.core.policies.AppPolicy
 import io.github.kdroidfilter.database.core.policies.FixedPolicy

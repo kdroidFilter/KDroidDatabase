@@ -1,19 +1,17 @@
-package io.github.kdroidfilter.database.generator
-
 import io.github.kdroidfilter.database.core.AppCategory
 import io.github.kdroidfilter.database.core.ModeSpec
-import io.github.kdroidfilter.database.core.UserMode
 import io.github.kdroidfilter.database.core.NetworkMode
 import io.github.kdroidfilter.database.core.NetworkPolicy
+import io.github.kdroidfilter.database.core.UserMode
 import io.github.kdroidfilter.database.core.policies.AppPolicy
 import io.github.kdroidfilter.database.core.policies.FixedPolicy
 import io.github.kdroidfilter.database.core.policies.ModeBasedPolicy
 import kotlinx.serialization.builtins.ListSerializer
+import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import java.nio.file.Files
-import java.nio.file.Path
 
 class JsonExtractorTest {
 
@@ -21,7 +19,7 @@ class JsonExtractorTest {
     fun `exportAll should serialize all existing policies without error`() {
         // Arrange: point to the real app-policies folder in the project
         val projectDir = Path.of("").toAbsolutePath()
-        val root = projectDir.parent.resolve("app-policies")
+        val root = projectDir.parent.resolve("../app-policies")
         val output = Files.createTempFile("all-policies", ".json")
 
         // Act: generate the single JSON array
