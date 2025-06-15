@@ -1,6 +1,17 @@
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import createSqlDriver
 import co.touchlab.kermit.Logger
+import com.kdroid.gplayscrapper.core.model.GooglePlayApplicationInfo
 import com.kdroid.gplayscrapper.services.getGooglePlayApplicationInfo
 import io.github.kdroidfilter.database.core.AppCategory
+import io.github.kdroidfilter.database.store.App_categories
+import io.github.kdroidfilter.database.store.App_categoriesQueries
+import io.github.kdroidfilter.database.store.Applications
+import io.github.kdroidfilter.database.store.ApplicationsQueries
+import io.github.kdroidfilter.database.store.Database
+import io.github.kdroidfilter.database.store.Developers
+import io.github.kdroidfilter.database.store.DevelopersQueries
+import io.github.kdroidfilter.database.store.VersionQueries
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -8,8 +19,6 @@ import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
-import java.sql.Connection
-import java.sql.DriverManager
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -60,165 +69,183 @@ object SqliteStoreBuilder {
 
     fun buildDatabase(appPoliciesDir: Path, outputDbPath: Path) {
         // First try to download the latest database
-        if (downloadLatestDatabase(outputDbPath)) {
-            logger.i { "✅ Using downloaded database at $outputDbPath" }
-        }
+//        if (downloadLatestDatabase(outputDbPath)) {
+//            logger.i { "✅ Using downloaded database at $outputDbPath" }
+//            return // Use the downloaded database
+//        }
+        //Disable for testing
 
         // Get release name from environment variable or generate timestamp
         val releaseName = System.getenv("RELEASE_NAME") ?: LocalDateTime.now()
             .format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
         logger.i { "🏷️ Using release name: $releaseName" }
 
-        Class.forName("org.sqlite.JDBC")
+        // Ensure the directory exists
         Files.createDirectories(outputDbPath.parent)
-        val url = "jdbc:sqlite:${outputDbPath.toAbsolutePath()}"
-        DriverManager.getConnection(url).use { conn ->
-            conn.autoCommit = false
-            createTables(conn)
-            insertCategories(conn)
-            insertVersion(conn, releaseName)
-            upsertPackages(conn, appPoliciesDir)
-            conn.commit()
-        }
+
+        // Create a SqlDriver for the database
+        val driver = JdbcSqliteDriver("jdbc:sqlite:${outputDbPath.toAbsolutePath()}")
+
+        // Create the database schema
+        Database.Schema.create(driver)
+
+        // Insert categories
+        insertCategories()
+
+        // Insert version information
+        insertVersion(releaseName)
+
+        // Insert packages
+        upsertPackages(appPoliciesDir)
+
         logger.i { "✅ SQLite database created at $outputDbPath" }
     }
 
-    private fun createTables(conn: Connection) = with(conn.createStatement()) {
-        // Replace OLD TABLE with the new definition
-        executeUpdate("""
-            CREATE TABLE IF NOT EXISTS categories (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE
-            )
-        """.trimIndent())
-        executeUpdate("""
-            CREATE TABLE IF NOT EXISTS packages (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                category_id INTEGER NOT NULL,
-                package_name TEXT NOT NULL UNIQUE,
-                store_info_en TEXT,
-                store_info_fr TEXT,
-                store_info_he TEXT,
-                FOREIGN KEY (category_id) REFERENCES categories(id)
-            )
-        """.trimIndent())
-        executeUpdate("""
-            CREATE TABLE IF NOT EXISTS version (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                release_name TEXT NOT NULL
-            )
-        """.trimIndent())
-        close()
-    }
 
-    private fun insertCategories(conn: Connection) {
-        conn.prepareStatement("INSERT OR IGNORE INTO categories (name) VALUES (?)").use { ps ->
-            AppCategory.entries.forEach { cat ->
-                ps.setString(1, cat.name)
-                ps.addBatch()
+    private fun insertCategories() {
+        val appCategoriesQueries = App_categoriesQueries(createSqlDriver())
+        var count = 0
+
+        AppCategory.entries.forEach { cat ->
+            try {
+                appCategoriesQueries.insertCategory(
+                    category_name = cat.name,
+                    description = null
+                )
+                count++
+            } catch (e: Exception) {
+                // Category might already exist, ignore
+                logger.d { "Category ${cat.name} already exists or could not be inserted: ${e.message}" }
             }
-            ps.executeBatch()
         }
-        logger.i { "✅ Inserted ${AppCategory.entries.size} categories" }
+
+        logger.i { "✅ Inserted $count categories" }
     }
 
-    private fun insertVersion(conn: Connection, releaseName: String) {
+    private fun insertVersion(releaseName: String) {
+        val versionQueries = VersionQueries(createSqlDriver())
+
         // Clear existing entries
-        conn.createStatement().use { stmt ->
-            stmt.executeUpdate("DELETE FROM version")
-        }
+        versionQueries.clearVersions()
 
         // Insert new release name
-        conn.prepareStatement("INSERT INTO version (release_name) VALUES (?)").use { ps ->
-            ps.setString(1, releaseName)
-            ps.executeUpdate()
-        }
+        versionQueries.insertVersion(releaseName)
+
         logger.i { "✅ Inserted version info: $releaseName" }
     }
 
+    private fun upsertPackages(dir: Path) {
+        // Get existing applications to avoid re-fetching
+        val existingApps = mutableMapOf<String, GooglePlayApplicationInfo?>()
 
-    private fun upsertPackages(conn: Connection, dir: Path) {
-        // Load existing information to avoid re-fetching if already present
-        data class Infos(val en: String?, val fr: String?, val he: String?)
-        val existing = mutableMapOf<String, Infos>()
-        conn.createStatement().use { stmt ->
-            stmt.executeQuery(
-                "SELECT package_name, store_info_en, store_info_fr, store_info_he FROM packages"
-            ).use { rs ->
-                while (rs.next()) {
-                    existing[rs.getString("package_name")] = Infos(
-                        rs.getString("store_info_en"),
-                        rs.getString("store_info_fr"),
-                        rs.getString("store_info_he")
-                    )
-                }
-            }
-        }
+        var count = 0
+        Files.walk(dir)
+            .filter { Files.isRegularFile(it) && it.toString().endsWith(".json") }
+            .forEach { file ->
+                val packageName = file.fileName.toString().substringBeforeLast(".")
+                val categoryName = file.parent.fileName.toString()
+                    .uppercase().replace('-', '_')
 
-        val insertSql = """
-        INSERT INTO packages
-          (package_name, category_id, store_info_en, store_info_fr, store_info_he)
-        VALUES (?, (SELECT id FROM categories WHERE name = ?), ?, ?, ?)
-    """.trimIndent()
-
-        val updateSql = """
-        UPDATE packages SET
-          category_id = (SELECT id FROM categories WHERE name = ?),
-          store_info_en = COALESCE(?, store_info_en),
-          store_info_fr = COALESCE(?, store_info_fr),
-          store_info_he = COALESCE(?, store_info_he)
-        WHERE package_name = ?
-    """.trimIndent()
-
-        conn.prepareStatement(insertSql).use { insertPs ->
-            conn.prepareStatement(updateSql).use { updatePs ->
-                var count = 0
-                Files.walk(dir)
-                    .filter { Files.isRegularFile(it) && it.toString().endsWith(".json") }
-                    .forEach { file ->
-                        val pkg = file.fileName.toString().substringBeforeLast(".")
-                        val catName = file.parent.fileName.toString()
-                            .uppercase().replace('-', '_')
-
-                        val prev = existing[pkg]
-                        val infos = runBlocking {
-                            listOf("en" to prev?.en, "fr" to prev?.fr, "he" to prev?.he)
-                                .map { (lang, previous) ->
-                                    previous ?: runCatching {
-                                        getGooglePlayApplicationInfo(pkg, lang, "us")
-                                    }
-                                        .map { json.encodeToString(it) }
-                                        .onFailure { e ->
-                                            logger.w { "⚠️ Failed to fetch [$lang] for $pkg: ${e.message}" }
-                                        }
-                                        .getOrNull()
-                                }
-                        }
-
-                        if (existing.containsKey(pkg)) {
-                            // UPDATE existing package
-                            updatePs.setString(1, catName)
-                            updatePs.setString(2, infos[0]) // en
-                            updatePs.setString(3, infos[1]) // fr
-                            updatePs.setString(4, infos[2]) // he
-                            updatePs.setString(5, pkg)
-                            updatePs.addBatch()
-                        } else {
-                            // INSERT new package
-                            insertPs.setString(1, pkg)
-                            insertPs.setString(2, catName)
-                            insertPs.setString(3, infos[0]) // en
-                            insertPs.setString(4, infos[1]) // fr
-                            insertPs.setString(5, infos[2]) // he
-                            insertPs.addBatch()
-                        }
-                        count++
+                // Get or create the category
+                val appCategoriesQueries = App_categoriesQueries(createSqlDriver())
+                val category = appCategoriesQueries
+                    .getCategoryByName(categoryName)
+                    .executeAsOneOrNull() ?: run {
+                        // Insert the category if it doesn't exist
+                        appCategoriesQueries.insertCategory(
+                            category_name = categoryName,
+                            description = null
+                        )
+                        appCategoriesQueries.getCategoryByName(categoryName).executeAsOne()
                     }
 
-                insertPs.executeBatch()
-                updatePs.executeBatch()
-                logger.i { "✅ Processed $count packages" }
+                // Fetch application info from Google Play (only English for now)
+                val appInfo = runBlocking {
+                    existingApps.getOrPut(packageName) {
+                        runCatching {
+                            getGooglePlayApplicationInfo(packageName, "en", "us")
+                        }.getOrNull()
+                    }
+                }
+
+                if (appInfo != null) {
+                    // Create DevelopersQueries instance
+                    val developersQueries = DevelopersQueries(createSqlDriver())
+
+                    // Get or create the developer
+                    val developer = developersQueries
+                        .getDeveloperByDeveloperId(appInfo.developerId)
+                        .executeAsOneOrNull() ?: run {
+                            // Insert the developer if it doesn't exist
+                            developersQueries.insertDeveloper(
+                                developer_id = appInfo.developerId,
+                                name = appInfo.developer,
+                                email = null,
+                                website = appInfo.developerWebsite,
+                                address = null
+                            )
+                            developersQueries.getDeveloperByDeveloperId(appInfo.developerId).executeAsOne()
+                        }
+
+                    // Create ApplicationsQueries instance
+                    val applicationsQueries = ApplicationsQueries(createSqlDriver())
+
+                    // Check if the application already exists
+                    val existingApp = applicationsQueries
+                        .getApplicationByAppId(packageName)
+                        .executeAsOneOrNull()
+
+                    if (existingApp == null) {
+                        // Insert the application
+                        applicationsQueries.insertApplication(
+                            app_id = packageName,
+                            title = appInfo.title,
+                            description = appInfo.description,
+                            description_html = appInfo.descriptionHTML,
+                            summary = appInfo.summary,
+                            installs = appInfo.installs,
+                            min_installs = appInfo.minInstalls?.toLong(),
+                            real_installs = appInfo.realInstalls?.toLong(),
+                            score = appInfo.score,
+                            ratings = appInfo.ratings?.toLong(),
+                            reviews = appInfo.reviews?.toLong(),
+                            histogram = appInfo.histogram?.toString(),
+                            price = appInfo.price,
+                            free = if (appInfo.free) 1 else 0,
+                            currency = appInfo.currency,
+                            sale = if (appInfo.sale) 1 else 0,
+                            sale_time = null,
+                            original_price = appInfo.originalPrice,
+                            sale_text = appInfo.saleText,
+                            offers_iap = if (appInfo.offersIAP) 1 else 0,
+                            in_app_product_price = appInfo.inAppProductPrice,
+                            developer_id = developer.id.toLong(),
+                            privacy_policy = appInfo.privacyPolicy,
+                            genre = appInfo.genre,
+                            genre_id = appInfo.genreId,
+                            icon = appInfo.icon,
+                            header_image = appInfo.headerImage,
+                            screenshots = appInfo.screenshots?.joinToString(","),
+                            video = appInfo.video,
+                            video_image = appInfo.videoImage,
+                            content_rating = appInfo.contentRating,
+                            content_rating_description = appInfo.contentRatingDescription,
+                            ad_supported = if (appInfo.adSupported) 1 else 0,
+                            contains_ads = if (appInfo.containsAds) 1 else 0,
+                            released = appInfo.released,
+                            updated = appInfo.updated?.toLong(),
+                            version = appInfo.version,
+                            comments = null,
+                            url = appInfo.url,
+                            app_category_id = category.id
+                        )
+                    }
+                    count++
+                } else {
+                    logger.w { "⚠️ Failed to fetch info for $packageName" }
+                }
             }
-        }
+
+        logger.i { "✅ Processed $count applications using SQLDelight tables" }
     }
 }
