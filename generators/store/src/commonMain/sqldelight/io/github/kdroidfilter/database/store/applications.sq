@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS applications (
     sale_text TEXT,
     offers_iap INTEGER DEFAULT 0, -- BOOLEAN
     in_app_product_price TEXT,
-    developer_id INTEGER NOT NULL, -- Référence vers developers
+    developer_id INTEGER NOT NULL, -- Ref to developers
     privacy_policy TEXT,
     genre TEXT,
     genre_id TEXT,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS applications (
     version TEXT DEFAULT 'Varies with device',
     comments TEXT, -- JSON array
     url TEXT,
-    app_category_id INTEGER NOT NULL, -- Référence vers app_categories
+    app_category_id INTEGER NOT NULL, -- Ref to app_categories
     created_at INTEGER DEFAULT (strftime('%s', 'now')),
     updated_at INTEGER DEFAULT (strftime('%s', 'now')),
     FOREIGN KEY (developer_id) REFERENCES developers(id),
