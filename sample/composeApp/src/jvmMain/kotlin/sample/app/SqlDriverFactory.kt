@@ -2,32 +2,31 @@ package sample.app
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import io.github.kdroidfilter.database.sample.Database
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Locale
+import java.util.*
 
 actual fun createSqlDriver(): SqlDriver {
     val dbPath = getDatabasePath()
     val driver = JdbcSqliteDriver("jdbc:sqlite:${dbPath.toAbsolutePath()}")
 
-    // Create tables if they don't exist
-    Database.Schema.create(driver)
-
     return driver
 }
 
 actual fun getDatabasePath(): Path {
-    // Use a path in the user's home directory
-    val userHome = System.getProperty("user.home")
-    val dbDir = Paths.get(userHome, ".kdroidfilter")
+    // Utiliser le chemin du projet
+    val projectRoot = System.getProperty("user.dir")
 
-    // Create directory if it doesn't exist
-    if (!dbDir.toFile().exists()) {
-        dbDir.toFile().mkdirs()
+    // Remonter au répertoire parent si nous sommes dans sample/
+    val rootDir = if (projectRoot.endsWith("sample")) {
+        Paths.get(projectRoot).parent
+    } else {
+        Paths.get(projectRoot)
     }
 
-    return dbDir.resolve("store-database.db")
+    // Chemin vers la base de données générée
+    val language = getDeviceLanguage()
+    return rootDir.resolve("../../generators/store/build/store-database-${language}.db")
 }
 
 actual fun getDeviceLanguage(): String {

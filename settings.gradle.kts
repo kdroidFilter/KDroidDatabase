@@ -30,6 +30,7 @@ dependencyResolutionManagement {
 }
 
 include(":core")
+include(":dao")
 include(":generators:policies")
 include(":generators:store")
 include(":localization")

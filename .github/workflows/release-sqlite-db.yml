@@ -40,7 +40,9 @@ jobs:
 
           # Verify the generated database files
           ls -l generators/policies/build/policies-database.db
-          ls -l generators/store/build/store-database.db
+          ls -l generators/store/build/store-database-en.db
+          ls -l generators/store/build/store-database-fr.db
+          ls -l generators/store/build/store-database-he.db
 
       - name: Define release name
         id: relname
@@ -62,4 +64,6 @@ jobs:
           name: ${{ env.RELEASE_NAME }}
           files: |
             generators/policies/build/policies-database.db
-            generators/store/build/store-database.db
+            generators/store/build/store-database-en.db
+            generators/store/build/store-database-fr.db
+            generators/store/build/store-database-he.db

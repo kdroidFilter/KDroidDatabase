@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS version (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    release_name TEXT NOT NULL
+);
+
+-- Get the current version
+getVersion:
+SELECT *
+FROM version
+LIMIT 1;
+
+-- Clear all versions
+clearVersions:
+DELETE FROM version;
+
+-- Insert a new version
+insertVersion:
+INSERT INTO version (release_name)
+VALUES (?);

@@ -16,6 +16,7 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(project(":core"))
+            implementation(project(":dao"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.serialization.json)
@@ -26,6 +27,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sqlite.jdbc)
             implementation(libs.maven.slf4j.provider)
+            implementation(libs.sqldelight.sqlite.driver)
         }
 
 
@@ -41,6 +43,7 @@ kotlin {
     }
 
 }
+
 
 tasks.register<JavaExec>("runStoreExtractor") {
     group = "extraction"
