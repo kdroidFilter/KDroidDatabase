@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.sql.delight)
 }
 
 
@@ -17,6 +16,7 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(project(":core"))
+            implementation(project(":dao"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.serialization.json)
@@ -44,13 +44,6 @@ kotlin {
 
 }
 
-sqldelight {
-    databases {
-        create("Database") {
-            packageName.set("io.github.kdroidfilter.database.store")
-        }
-    }
-}
 
 tasks.register<JavaExec>("runStoreExtractor") {
     group = "extraction"

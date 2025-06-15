@@ -3,7 +3,6 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import io.github.kdroidfilter.database.store.Database
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.synchronized
 
 /**
  * Gets the database path, either from the provided path or using a default location.
