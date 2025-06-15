@@ -5,7 +5,7 @@ on:
 
 jobs:
   generator-tests:
-    name: Verify JsonExtractor tests
+    name: Verify JSON policies and tests
     runs-on: ubuntu-latest
 
     steps:
@@ -28,5 +28,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Run cleanJvmTest and JsonExtractorTest
-        run: ./gradlew :generator:cleanJvmTest :generator:jvmTest --tests "io.github.kdroidfilter.database.generator.JsonExtractorTest"
+      - name: Validate JSON policies
+        run: ./gradlew :generators:policies:validateJson
+
+      - name: Run JsonExtractor tests
+        run: ./gradlew :generators:policies:cleanJvmTest :generators:policies:jvmTest --tests "io.github.kdroidfilter.database.generator.JsonExtractorTest"

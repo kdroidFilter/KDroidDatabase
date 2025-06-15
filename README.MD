@@ -208,12 +208,33 @@ Use when each user mode has multiple variants, each with its own rules and optio
 
 ## ✅ Checklist Before Submitting
 
-1. 🔎 **Validate JSON** with a linter (e.g., [jsonlint.com](https://jsonlint.com/)).
+1. 🔎 **Validate JSON** with a linter (e.g., [jsonlint.com](https://jsonlint.com/)) or use the project's built-in validation task (see below).
 2. 📂 **Place** your file under the correct category folder.
 3. 📜 **Commit only** the JSON file—no code or docs changes.
 4. 📝 **PR title** should clearly state the app package.
 
 CI will reject invalid JSON or misplaced files. Good luck! 🙌
+
+---
+
+## 🛠️ Gradle Tasks
+
+The project includes several Gradle tasks to help with development and validation:
+
+### Validating JSON Files
+
+To validate all JSON policy files for correctness:
+
+```bash
+./gradlew :generators:policies:validateJson
+```
+
+This task checks all JSON files in the `app-policies` directory to ensure they:
+- Have valid JSON syntax
+- Conform to the expected policy structure
+- Can be properly parsed by the application
+
+The task will report any validation errors found, making it easier to identify and fix issues before submitting.
 
 ---
 
