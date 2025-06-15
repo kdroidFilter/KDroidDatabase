@@ -364,3 +364,41 @@ dependencies {
     implementation("io.github.kdroidfilter.database:localization:<version>")
 }
 ```
+
+### Downloader Module
+
+The downloader module provides functionality to download the latest store and policies databases from GitHub releases. It includes methods to download databases for multiple languages.
+
+```kotlin
+dependencies {
+    implementation("io.github.kdroidfilter.database.downloader:core:<version>")
+}
+```
+
+#### Usage Example
+
+```kotlin
+// Create a DatabaseDownloader instance
+val databaseDownloader = DatabaseDownloader()
+
+// Download store databases for all languages (en, fr, he)
+val outputDir = "path/to/output/directory"
+val storeResults = databaseDownloader.downloadLatestStoreDatabases(outputDir)
+
+// Check download results
+storeResults.forEach { (language, success) ->
+    if (success) {
+        println("Successfully downloaded store database for $language")
+    } else {
+        println("Failed to download store database for $language")
+    }
+}
+
+// Download policies database
+val policiesResult = databaseDownloader.downloadLatestPoliciesDatabase(outputDir)
+if (policiesResult) {
+    println("Successfully downloaded policies database")
+} else {
+    println("Failed to download policies database")
+}
+```
