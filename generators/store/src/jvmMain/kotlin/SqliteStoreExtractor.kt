@@ -12,5 +12,5 @@ fun main() {
     val baseDbPath = projectDir.resolve("build/store-database.db")
 
     // Build databases in multiple languages (English, French, Hebrew)
-    SqliteStoreBuilder.buildMultiLanguageDatabases(policiesDir, baseDbPath)
+    SqliteStoreBuilder.buildOrUpdateMultiLanguageDatabases(policiesDir, baseDbPath)
 }
