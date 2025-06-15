@@ -6,7 +6,6 @@ import io.github.kdroidfilter.database.core.AppCategory
 import io.github.kdroidfilter.database.store.*
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
@@ -16,7 +15,31 @@ import java.time.format.DateTimeFormatter
 
 object SqliteStoreBuilder {
     private val logger = Logger.withTag("SqliteStoreBuilder")
-    private val json = Json { prettyPrint = true; ignoreUnknownKeys = true; encodeDefaults = true }
+
+    /**
+     * Builds three databases in different languages: English, French, and Hebrew.
+     * @param appPoliciesDir The directory containing app policies
+     * @param baseDbPath The base path used to determine the output directory.
+     *                  Only the parent directory of this path is used to create the actual database files.
+     */
+    fun buildMultiLanguageDatabases(appPoliciesDir: Path, baseDbPath: Path) {
+        // Get the parent directory where databases will be stored
+        val outputDir = baseDbPath.parent
+
+        // Create English database
+        val englishDbPath = outputDir.resolve("store-database-en.db")
+        buildDatabase(appPoliciesDir, englishDbPath, "en", "us")
+
+        // Create French database
+        val frenchDbPath = outputDir.resolve("store-database-fr.db")
+        buildDatabase(appPoliciesDir, frenchDbPath, "fr", "fr")
+
+        // Create Hebrew database
+        val hebrewDbPath = outputDir.resolve("store-database-he.db")
+        buildDatabase(appPoliciesDir, hebrewDbPath, "he", "il")
+
+        logger.i { "✅ Created databases in English, French, and Hebrew" }
+    }
 
     /**
      * Attempts to download the latest database from GitHub releases.
@@ -59,7 +82,7 @@ object SqliteStoreBuilder {
         }
     }
 
-    fun buildDatabase(appPoliciesDir: Path, outputDbPath: Path) {
+    fun buildDatabase(appPoliciesDir: Path, outputDbPath: Path, language: String = "en", country: String = "us") {
         // First try to download the latest database
 //        if (downloadLatestDatabase(outputDbPath)) {
 //            logger.i { "✅ Using downloaded database at $outputDbPath" }
@@ -70,7 +93,7 @@ object SqliteStoreBuilder {
         // Get release name from environment variable or generate timestamp
         val releaseName = System.getenv("RELEASE_NAME") ?: LocalDateTime.now()
             .format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
-        logger.i { "🏷️ Using release name: $releaseName" }
+        logger.i { "🏷️ Using release name: $releaseName for language: $language" }
 
         // Ensure the directory exists
         Files.createDirectories(outputDbPath.parent)
@@ -88,7 +111,7 @@ object SqliteStoreBuilder {
         insertVersion(releaseName, outputDbPath)
 
         // Insert packages
-        upsertPackages(appPoliciesDir, outputDbPath)
+        upsertPackages(appPoliciesDir, outputDbPath, language, country)
 
         logger.i { "✅ SQLite database created at $outputDbPath" }
     }
@@ -126,7 +149,7 @@ object SqliteStoreBuilder {
         logger.i { "✅ Inserted version info: $releaseName" }
     }
 
-    private fun upsertPackages(dir: Path, outputDbPath: Path) {
+    private fun upsertPackages(dir: Path, outputDbPath: Path, language: String = "en", country: String = "us") {
         // Get existing applications to avoid re-fetching
         val existingApps = mutableMapOf<String, GooglePlayApplicationInfo?>()
 
@@ -151,11 +174,11 @@ object SqliteStoreBuilder {
                         appCategoriesQueries.getCategoryByName(categoryName).executeAsOne()
                     }
 
-                // Fetch application info from Google Play (only English for now)
+                // Fetch application info from Google Play with specified language and country
                 val appInfo = runBlocking {
                     existingApps.getOrPut(packageName) {
                         runCatching {
-                            getGooglePlayApplicationInfo(packageName, "en", "us")
+                            getGooglePlayApplicationInfo(packageName, language, country)
                         }.getOrNull()
                     }
                 }
