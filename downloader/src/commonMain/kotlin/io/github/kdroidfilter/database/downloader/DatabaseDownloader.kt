@@ -6,7 +6,7 @@ import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseF
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
+import java.net.URI
 
 /**
  * Class responsible for downloading KDroid database files from GitHub releases.
@@ -145,7 +145,7 @@ class DatabaseDownloader {
         outputFile.parentFile?.mkdirs()
 
         // Download the file
-        URL(url).openStream().use { input ->
+        URI(url).toURL().openStream().use { input ->
             FileOutputStream(outputFile).use { output ->
                 input.copyTo(output)
             }
