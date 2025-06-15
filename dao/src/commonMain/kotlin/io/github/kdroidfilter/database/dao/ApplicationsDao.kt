@@ -13,7 +13,7 @@ import io.github.kdroidfilter.database.store.Developers
  * Contains functions for database operations related to applications
  */
 object ApplicationsDao {
-    
+
     /**
      * Creates a GooglePlayApplicationInfo from database data
      */
@@ -129,4 +129,5 @@ object ApplicationsDao {
             createAppInfoWithExtras(app, developer, category, deviceLanguage, creator)
         }
     }
+
 }
