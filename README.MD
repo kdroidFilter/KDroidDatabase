@@ -1,5 +1,7 @@
 # 📄 Kdroid Database Policies Contribution Guide
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter.database/core)](https://search.maven.org/artifact/io.github.kdroidfilter.database/core)
+
 Welcome to the community-driven database of kosher filtering rules for applications. This guide is primarily used by KDroid Filter but is freely available for anyone to use. Licensed under the LGPL, you may integrate these policies even in closed-source applications. At this stage, it is recommended to contribute only host-based rules, as the tools for detecting apps and UI nodes are not yet available.
 
 The KDroid app store dynamically adapts its application listings based on the current **UserMode** (levels 0 to 5) to only show apps that are appropriate for each level:
@@ -348,7 +350,7 @@ All of these apps are tagged for additional caution. They will only be functiona
 
 KDroid Database provides multiple modules that you can use in your own projects:
 
-### Core Module
+### Core Module [![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter.database/core)](https://search.maven.org/artifact/io.github.kdroidfilter.database/core)
 
 The core module contains the essential data structures and enums for the KDroid Database, including the `AppCategory` enum and policy definitions.
 
@@ -358,7 +360,7 @@ dependencies {
 }
 ```
 
-### Localization Module
+### Localization Module [![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter.database/localization)](https://search.maven.org/artifact/io.github.kdroidfilter.database/localization)
 
 The localization module extends the core module to provide localized category names in multiple languages (English, Hebrew, and French). It includes platform-specific extensions for Android and JVM.
 
@@ -368,7 +370,7 @@ dependencies {
 }
 ```
 
-### Downloader Module
+### Downloader Module [![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter.database.downloader/core)](https://search.maven.org/artifact/io.github.kdroidfilter.database.downloader/core)
 
 The downloader module provides functionality to download the latest store and policies databases from GitHub releases. It includes methods to download databases for multiple languages.
 
@@ -406,7 +408,7 @@ if (policiesResult) {
 }
 ```
 
-### DAO Module
+### DAO Module [![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter.database.dao/core)](https://search.maven.org/artifact/io.github.kdroidfilter.database.dao/core)
 
 The DAO (Data Access Object) module provides a clean interface for database operations, abstracting away direct SQL queries. It includes DAOs for accessing application data and version information, as well as utility classes for working with the data.
 
