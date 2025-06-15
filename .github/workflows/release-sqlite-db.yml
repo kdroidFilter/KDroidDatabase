@@ -35,19 +35,12 @@ jobs:
 
       - name: Build project and export SQLite DBs
         run: |
-          # Build and export policies database
-          ./gradlew :generator:build --quiet
-          ./gradlew :generator:jvmRun \
-            -DmainClass=io.github.kdroidfilter.database.generator.SqlLiteExtractorKt \
-            --quiet
-          ls -l generator/build/policies.db
+          # Build and run both generators using the new task
+          ./gradlew runGenerators --quiet
 
-          # Build and export store database
-          ./gradlew :storegenerator:build --quiet
-          ./gradlew :storegenerator:jvmRun \
-            -DmainClass=io.github.kdroidfilter.database.storegenerator.SqliteStoreBuilderKt \
-            --quiet
-          ls -l storegenerator/build/store-database.db
+          # Verify the generated database files
+          ls -l generators/policies/build/policies-database.db
+          ls -l generators/store/build/store-database.db
 
       - name: Define release name
         id: relname
@@ -68,5 +61,5 @@ jobs:
           tag_name: ${{ env.RELEASE_NAME }}
           name: ${{ env.RELEASE_NAME }}
           files: |
-            generator/build/policies.db
-            storegenerator/build/store-database.db
+            generators/policies/build/policies-database.db
+            generators/store/build/store-database.db

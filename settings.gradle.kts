@@ -28,8 +28,9 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 include(":core")
-include(":generator")
-include(":storegenerator")
+include(":generators:policies")
+include(":generators:store")
 include(":localization")
 include(":sample:composeApp")

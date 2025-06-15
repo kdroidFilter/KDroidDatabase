@@ -5,3 +5,11 @@ plugins {
     alias(libs.plugins.android.application).apply(false)
     alias(libs.plugins.vannitktech.maven.publish).apply(false)
 }
+
+// Task to run both generators
+tasks.register("runGenerators") {
+    group = "extraction"
+    description = "Runs both the SQLite policy extractor and the SQLite store extractor"
+
+    dependsOn(":generators:policies:runPolicyExtractor", ":generators:store:runStoreExtractor")
+}
