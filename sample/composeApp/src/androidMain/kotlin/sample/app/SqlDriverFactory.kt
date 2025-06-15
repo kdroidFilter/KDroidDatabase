@@ -1,15 +1,14 @@
 package sample.app
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import io.github.kdroidfilter.database.sample.Database
+import io.github.kdroidfilter.database.store.Database
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Locale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import java.util.*
 
 private lateinit var applicationContext: Context
 
@@ -26,6 +25,7 @@ actual fun createSqlDriver(): SqlDriver {
     return driver
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 actual fun getDatabasePath(): Path {
     val databaseFile = applicationContext.getDatabasePath("store-database.db")
     return Paths.get(databaseFile.absolutePath)

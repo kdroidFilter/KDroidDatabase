@@ -50,17 +50,26 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kdroid.gplayscrapper.core.model.GooglePlayApplicationInfo
-import io.github.kdroidfilter.database.sample.Database
+import io.github.kdroidfilter.database.store.Database
+import io.github.kdroidfilter.database.core.AppCategory
+import io.github.kdroidfilter.database.localization.LocalizedAppCategory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import java.nio.file.Path
 
 expect fun createSqlDriver(): SqlDriver
 expect fun getDatabasePath(): Path
 expect fun getDeviceLanguage(): String
+
+// Extended class to add additional information to the GooglePlayApplicationInfo model
+data class AppInfoWithExtras(
+    val id: Long,
+    val categoryRawName: String,
+    val categoryLocalizedName: String,
+    val app: GooglePlayApplicationInfo
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,46 +77,30 @@ fun App() {
     val database = remember { Database(createSqlDriver()) }
     var isLoading by remember { mutableStateOf(true) }
     var message by remember { mutableStateOf<String?>(null) }
-    var packages by remember { mutableStateOf<List<PackageInfo>>(emptyList()) }
-    var selectedPkgInfo by remember { mutableStateOf<GooglePlayApplicationInfo?>(null) }
+    var applications by remember { mutableStateOf<List<AppInfoWithExtras>>(emptyList()) }
+    var selectedAppDetails by remember { mutableStateOf<AppInfoWithExtras?>(null) }
     var isRefreshing by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val logger = remember { Logger.withTag("AppList") }
 
     LaunchedEffect(Unit) {
         try {
-            // Download the latest database if it doesn't exist
-            val dbDownloaded = DatabaseManager.downloadLatestDatabaseIfNotExists()
-            if (!dbDownloaded) {
-                logger.w { "⚠️ Could not download the database, will try to use existing one if available" }
-            }
-
             withContext(Dispatchers.IO) {
-                val pkgs = database.storeQueries.getAllPackages()
-                    .executeAsList()
-                    .map {
-                        PackageInfo(
-                            it.package_name,
-                            it.store_info_en,
-                            it.store_info_fr,
-                            it.store_info_he
-                        )
-                    }
-                packages = pkgs
+                val apps = loadApplicationsFromDatabase(database)
+                applications = apps
             }
         } catch (e: Exception) {
             logger.e { "Loading error: ${e.message}" }
-            message = "Error: ${e.message}"
+            message = "Error: ${e.message}\nMake sure you have run the 'runStoreExtractor' task to generate the database."
         } finally {
             isLoading = false
         }
     }
 
-    // Show snackbar when message changes
+    // Display the snackbar when the message changes
     LaunchedEffect(message) {
         message?.let {
             snackbarHostState.showSnackbar(message = it)
-            // Clear the message after showing it
             message = null
         }
     }
@@ -122,38 +115,35 @@ fun App() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "KDroid Database",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Column {
+                    Text(
+                        text = "KDroid Database",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = "Language: ${getDeviceLanguage()}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "DB: ${getDatabasePath().fileName}",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 10.sp
+                    )
+                }
                 IconButton(
                     onClick = {
                         if (!isLoading && !isRefreshing) {
                             isRefreshing = true
-                            // Launch a coroutine to refresh the database
                             MainScope().launch {
                                 try {
-                                    val refreshed = DatabaseManager.refreshDatabase()
-                                    if (refreshed) {
-                                        message = "Database refreshed successfully!"
-                                        // Reload the database
-                                        val pkgs = database.storeQueries.getAllPackages()
-                                            .executeAsList()
-                                            .map {
-                                                PackageInfo(
-                                                    it.package_name,
-                                                    it.store_info_en,
-                                                    it.store_info_fr,
-                                                    it.store_info_he
-                                                )
-                                            }
-                                        packages = pkgs
-                                    } else {
-                                        message = "Failed to refresh database."
+                                    withContext(Dispatchers.IO) {
+                                        val apps = loadApplicationsFromDatabase(database)
+                                        applications = apps
                                     }
+                                    message = "Database refreshed successfully!"
                                 } catch (e: Exception) {
                                     logger.e { "Refresh error: ${e.message}" }
-                                    message = "Error refreshing: ${e.message}"
+                                    message = "Refresh error: ${e.message}"
                                 } finally {
                                     isRefreshing = false
                                 }
@@ -189,8 +179,8 @@ fun App() {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(packages) { pkg ->
-                        AppRow(pkg) { selectedPkgInfo = loadPkgDetails(pkg) }
+                    items(applications) { app ->
+                        AppRow(app) { selectedAppDetails = app }
                         HorizontalDivider()
                     }
                 }
@@ -198,15 +188,95 @@ fun App() {
         }
     }
 
-    selectedPkgInfo?.let { info ->
-        AppDetailDialog(info) { selectedPkgInfo = null }
+    selectedAppDetails?.let { info ->
+        AppDetailDialog(info) { selectedAppDetails = null }
+    }
+}
+
+// Function to load applications from the database with SQLDelight
+private fun loadApplicationsFromDatabase(database: Database): List<AppInfoWithExtras> {
+    // Directly use the query objects provided by the database
+    val applicationsQueries = database.applicationsQueries
+    val developersQueries = database.developersQueries
+    val categoriesQueries = database.app_categoriesQueries
+
+    return applicationsQueries.getAllApplications().executeAsList().map { app ->
+        val developer = developersQueries.getDeveloperById(app.developer_id).executeAsOne()
+        val category = categoriesQueries.getCategoryById(app.app_category_id).executeAsOne()
+
+        // Create a GooglePlayApplicationInfo from the database data
+        val appInfo = GooglePlayApplicationInfo(
+            appId = app.app_id,
+            title = app.title,
+            description = app.description ?: "",
+            descriptionHTML = app.description_html ?: "",
+            summary = app.summary ?: "",
+            installs = app.installs ?: "",
+            minInstalls = app.min_installs ?: 0L,
+            realInstalls = app.real_installs ?: 0L,
+            score = app.score ?: 0.0,
+            ratings = app.ratings ?: 0L,
+            reviews = app.reviews ?: 0L,
+            histogram = app.histogram?.removeSurrounding("[", "]")?.split(", ")?.map { it.toLongOrNull() ?: 0L } ?: emptyList(),
+            price = app.price ?: 0.0,
+            free = app.free == 1L,
+            currency = app.currency ?: "",
+            sale = app.sale == 1L,
+            saleTime = app.sale_time,
+            originalPrice = app.original_price,
+            saleText = app.sale_text,
+            offersIAP = app.offers_iap == 1L,
+            inAppProductPrice = app.in_app_product_price ?: "",
+            developer = developer.name,
+            developerId = developer.developer_id,
+            developerEmail = developer.email ?: "",
+            developerWebsite = developer.website ?: "",
+            developerAddress = developer.address ?: "",
+            privacyPolicy = app.privacy_policy ?: "",
+            genre = app.genre ?: "",
+            genreId = app.genre_id ?: "",
+            icon = app.icon ?: "",
+            headerImage = app.header_image ?: "",
+            screenshots = app.screenshots?.split(",") ?: emptyList(),
+            video = app.video ?: "",
+            videoImage = app.video_image ?: "",
+            contentRating = app.content_rating ?: "",
+            contentRatingDescription = app.content_rating_description ?: "",
+            adSupported = app.ad_supported == 1L,
+            containsAds = app.contains_ads == 1L,
+            released = app.released ?: "",
+            updated = app.updated ?: 0L,
+            version = app.version ?: "Varies with device",
+            url = app.url ?: ""
+        )
+
+        // Try to convert the category name to an AppCategory enum
+        val categoryEnum = try {
+            AppCategory.valueOf(category.category_name)
+        } catch (e: IllegalArgumentException) {
+            // If the category is not found in the enum, use null
+            null
+        }
+
+        // Get the localized name of the category if possible
+        val localizedCategoryName = if (categoryEnum != null) {
+            LocalizedAppCategory.getLocalizedName(categoryEnum, getDeviceLanguage())
+        } else {
+            category.category_name // Fallback to raw name if not found in enum
+        }
+
+        AppInfoWithExtras(
+            id = app.id,
+            categoryRawName = category.category_name,
+            categoryLocalizedName = localizedCategoryName,
+            app = appInfo
+        )
     }
 }
 
 @Composable
-fun AppRow(pkg: PackageInfo, onClick: () -> Unit) {
-    val appDetails = remember { loadPkgDetails(pkg) }
-
+fun AppRow(appWithExtras: AppInfoWithExtras, onClick: () -> Unit) {
+    val app = appWithExtras.app
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -215,7 +285,7 @@ fun AppRow(pkg: PackageInfo, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = createImageRequest(appDetails?.icon),
+            model = createImageRequest(app.icon),
             contentDescription = "App icon",
             modifier = Modifier
                 .size(56.dp)
@@ -224,22 +294,28 @@ fun AppRow(pkg: PackageInfo, onClick: () -> Unit) {
         Spacer(modifier = Modifier.width(12.dp))
         Column {
             Text(
-                text = appDetails?.title ?: pkg.packageName,
+                text = app.title,
                 style = MaterialTheme.typography.bodyLarge,
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "${appDetails?.score ?: 0.0} ★",
+                text = "${app.score} ★ (${app.ratings} ratings)",
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = 12.sp
+            )
+            Text(
+                text = "Category: ${appWithExtras.categoryLocalizedName}",
+                style = MaterialTheme.typography.bodySmall,
+                fontSize = 10.sp
             )
         }
     }
 }
 
 @Composable
-fun AppDetailDialog(info: GooglePlayApplicationInfo, onDismiss: () -> Unit) {
+fun AppDetailDialog(appWithExtras: AppInfoWithExtras, onDismiss: () -> Unit) {
+    val info = appWithExtras.app
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -264,8 +340,8 @@ fun AppDetailDialog(info: GooglePlayApplicationInfo, onDismiss: () -> Unit) {
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
-                // Header Image
-                info.headerImage.takeIf { it.isNotBlank() }?.let { url ->
+                // Header image
+                info.headerImage?.takeIf { it.isNotBlank() }?.let { url ->
                     AsyncImage(
                         model = createImageRequest(url),
                         contentDescription = null,
@@ -277,7 +353,7 @@ fun AppDetailDialog(info: GooglePlayApplicationInfo, onDismiss: () -> Unit) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                // Screenshots Carousel
+                // Screenshots carousel
                 info.screenshots.takeIf { it.isNotEmpty() }?.let { list ->
                     Text(
                         text = "Screenshots:", 
@@ -302,19 +378,32 @@ fun AppDetailDialog(info: GooglePlayApplicationInfo, onDismiss: () -> Unit) {
                     }
                 }
 
-                // App Info
+                // Application information
                 Text(text = "Rating: ${info.score} ★ (${info.ratings} ratings)")
-                Text(text = "Installs: ${info.installs}")
+                Text(text = "Installations: ${info.installs.takeIf { it.isNotBlank() } ?: "Not specified"}")
                 Text(
                     text = "Price: ${if (info.free) "Free" else "${info.price} ${info.currency}"}"
                 )
+                Text(text = "Category: ${appWithExtras.categoryLocalizedName}")
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = info.description)
-                Spacer(modifier = Modifier.height(8.dp))
+                if (info.description.isNotBlank()) {
+                    Text(text = info.description)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
                 Text(text = "Version: ${info.version}")
-                Text(text = "Updated: ${info.updated}")
+                if (info.updated > 0) {
+                    Text(text = "Updated: ${info.updated}")
+                }
                 Text(text = "Developer: ${info.developer}")
-                Text(text = "Email: ${info.developerEmail}")
+                if (info.developerWebsite.isNotBlank()) {
+                    Text(text = "Website: ${info.developerWebsite}")
+                }
+                if (info.genre.isNotBlank()) {
+                    Text(text = "Genre: ${info.genre}")
+                }
+                if (info.contentRating.isNotBlank()) {
+                    Text(text = "Content Rating: ${info.contentRating}")
+                }
             }
         },
         confirmButton = {
@@ -336,20 +425,4 @@ private fun createImageRequest(data: Any?): ImageRequest {
         .data(data)
         .crossfade(true)
         .build()
-}
-
-private fun loadPkgDetails(pkg: PackageInfo): GooglePlayApplicationInfo? {
-    val lang = getDeviceLanguage()
-    val rawJson = when (lang) {
-        "fr" -> pkg.storeInfoFr ?: pkg.storeInfoEn
-        "he" -> pkg.storeInfoHe ?: pkg.storeInfoEn
-        else -> pkg.storeInfoEn
-    } ?: return null
-
-    val json = Json { ignoreUnknownKeys = true }
-    return try {
-        json.decodeFromString(GooglePlayApplicationInfo.serializer(), rawJson)
-    } catch (_: Exception) {
-        null
-    }
 }

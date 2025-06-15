@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.android.application)
-    alias(libs.plugins.sql.delight)
 }
 
 kotlin {
@@ -21,11 +20,13 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core"))
+            implementation(project(":dao"))
+            implementation(project(":localization"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
-            implementation(project(":core"))
             implementation(libs.kermit)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.gplay.scrapper.core)
@@ -68,7 +69,7 @@ android {
 
     defaultConfig {
         applicationId = "io.github.kdroidfilter.database.sample"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -96,10 +97,3 @@ compose.desktop {
     }
 }
 
-sqldelight {
-    databases {
-        create("Database") {
-            packageName.set("io.github.kdroidfilter.database.sample")
-        }
-    }
-}
