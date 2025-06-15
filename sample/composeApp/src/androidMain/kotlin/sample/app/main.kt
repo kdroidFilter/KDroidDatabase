@@ -12,7 +12,6 @@ class AppActivity : ComponentActivity() {
         // Initialize the application context for database access
         initializeContext(this)
 
-        enableEdgeToEdge()
         setContent { App() }
     }
 }

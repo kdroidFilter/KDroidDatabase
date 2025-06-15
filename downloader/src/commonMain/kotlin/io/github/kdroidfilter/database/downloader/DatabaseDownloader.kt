@@ -13,6 +13,61 @@ class DatabaseDownloader {
     private val logger = Logger.withTag("DatabaseDownloader")
 
     /**
+     * Downloads the latest store database for a specific language from GitHub releases.
+     * @param outputDir The directory where the database file will be saved
+     * @param language The language code (en, fr, he) for which to download the database
+     * @return Boolean indicating whether the download was successful
+     */
+    suspend fun downloadLatestStoreDatabaseForLanguage(outputDir: String, language: String): Boolean {
+        try {
+            logger.i { "🔄 Attempting to download the latest store database for language: $language..." }
+            val fetcher = GitHubReleaseFetcher(owner = GitHubConstants.OWNER, repo = GitHubConstants.REPO)
+            val latestRelease = fetcher.getLatestRelease()
+
+            if (latestRelease != null && latestRelease.assets.isNotEmpty()) {
+                // Look for language-specific database file
+                val assetName = "store-database-$language.db"
+                val asset = latestRelease.assets.find { it.name == assetName }
+
+                if (asset != null) {
+                    val outputDirFile = File(outputDir)
+                    if (!outputDirFile.exists()) {
+                        outputDirFile.mkdirs()
+                    }
+
+                    val outputDbFile = File(outputDirFile, assetName)
+                    val downloadUrl = asset.browser_download_url
+
+                    logger.i { "📥 Downloading $language store database from: $downloadUrl" }
+
+                    // Download the file
+                    downloadFile(downloadUrl, outputDbFile.absolutePath)
+
+                    // Verify the file was downloaded successfully
+                    if (outputDbFile.exists() && outputDbFile.length() > 0) {
+                        logger.i {
+                            "✅ Store database $language downloaded successfully to ${outputDbFile.absolutePath}"
+                        }
+                        return true
+                    } else {
+                        logger.w { "⚠️ Downloaded file for $language is empty or does not exist" }
+                        return false
+                    }
+                } else {
+                    logger.w { "⚠️ No store database asset found for language: $language" }
+                    return false
+                }
+            } else {
+                logger.w { "⚠️ No store database assets found in the latest release" }
+                return false
+            }
+        } catch (e: Exception) {
+            logger.e(e) { "❌ Failed to download store database for $language: ${e.message}" }
+            return false
+        }
+    }
+
+    /**
      * Downloads the latest store databases for all three languages (en, fr, he) from GitHub releases.
      * @param outputDir The directory where the database files will be saved
      * @return Map of language codes to download success status

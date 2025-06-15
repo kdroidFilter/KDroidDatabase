@@ -41,4 +41,5 @@ class DatabaseVersionChecker {
             return false
         }
     }
+
 }
