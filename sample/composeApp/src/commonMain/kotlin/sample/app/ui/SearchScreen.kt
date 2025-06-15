@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.kdroidfilter.database.store.Database
-import sample.app.models.AppInfoWithExtras
+import io.github.kdroidfilter.database.dao.AppInfoWithExtras
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,16 +36,23 @@ fun SearchScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         SearchBar(
-            query = searchQuery,
-            onQueryChange = onSearchQueryChange,
-            onSearch = { /* Already handled in onQueryChange */ },
-            active = false,
-            onActiveChange = { /* Not needed for this implementation */ },
+            inputField = {
+                androidx.compose.material3.SearchBarDefaults.InputField(
+                    query = searchQuery,
+                    onQueryChange = onSearchQueryChange,
+                    onSearch = { /* Already handled in onQueryChange */ },
+                    expanded = false,
+                    onExpandedChange = { /* Not needed for this implementation */ },
+                    placeholder = { Text("Search applications") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    enabled = true
+                )
+            },
+            expanded = false,
+            onExpandedChange = { /* Not needed for this implementation */ },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            placeholder = { Text("Search applications") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") }
+                .padding(16.dp)
         ) {
             // Search suggestions would go here if needed
         }

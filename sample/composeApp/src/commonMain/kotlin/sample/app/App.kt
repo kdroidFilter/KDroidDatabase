@@ -44,10 +44,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
-import sample.app.data.loadApplicationsFromDatabase
-import sample.app.data.searchApplicationsInDatabase
-import sample.app.models.AppInfoWithExtras
-import sample.app.models.Screen
+import io.github.kdroidfilter.database.dao.ApplicationsDao
+import io.github.kdroidfilter.database.dao.AppInfoWithExtras
 import sample.app.ui.AppDetailDialog
 import sample.app.ui.AppRow
 import sample.app.ui.SearchScreen
@@ -55,6 +53,11 @@ import sample.app.ui.SearchScreen
 expect fun createSqlDriver(): SqlDriver
 expect fun getDatabasePath(): Path
 expect fun getDeviceLanguage(): String
+
+enum class Screen {
+    Home,
+    Search
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +82,17 @@ fun App() {
     LaunchedEffect(Unit) {
         try {
             withContext(Dispatchers.IO) {
-                val apps = loadApplicationsFromDatabase(database)
+                val apps = ApplicationsDao.loadApplicationsFromDatabase(
+                    database = database,
+                    deviceLanguage = getDeviceLanguage(),
+                    creator = { id, categoryLocalizedName, appInfo ->
+                        AppInfoWithExtras(
+                            id = id,
+                            categoryLocalizedName = categoryLocalizedName,
+                            app = appInfo
+                        )
+                    }
+                )
                 applications = apps
             }
         } catch (e: Exception) {
@@ -130,7 +143,17 @@ fun App() {
                             MainScope().launch {
                                 try {
                                     withContext(Dispatchers.IO) {
-                                        val apps = loadApplicationsFromDatabase(database)
+                                        val apps = ApplicationsDao.loadApplicationsFromDatabase(
+                                            database = database,
+                                            deviceLanguage = getDeviceLanguage(),
+                                            creator = { id, categoryLocalizedName, appInfo ->
+                                                AppInfoWithExtras(
+                                                    id = id,
+                                                    categoryLocalizedName = categoryLocalizedName,
+                                                    app = appInfo
+                                                )
+                                            }
+                                        )
                                         applications = apps
                                     }
                                     message = "Database refreshed successfully!"
@@ -206,7 +229,18 @@ fun App() {
                                     MainScope().launch {
                                         try {
                                             withContext(Dispatchers.IO) {
-                                                val results = searchApplicationsInDatabase(database, newQuery)
+                                                val results = ApplicationsDao.searchApplicationsInDatabase(
+                                                    database = database,
+                                                    query = newQuery,
+                                                    deviceLanguage = getDeviceLanguage(),
+                                                    creator = { id, categoryLocalizedName, appInfo ->
+                                                        AppInfoWithExtras(
+                                                            id = id,
+                                                            categoryLocalizedName = categoryLocalizedName,
+                                                            app = appInfo
+                                                        )
+                                                    }
+                                                )
                                                 searchResults = results
                                             }
                                         } catch (e: Exception) {

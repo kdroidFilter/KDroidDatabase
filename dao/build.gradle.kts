@@ -21,20 +21,32 @@ kotlin {
 
 
     sourceSets {
-        jvmMain.dependencies {
-            implementation(kotlin("test"))
+
+        androidMain.dependencies {
+            implementation(libs.sqldelight.android.driver)
+            implementation(libs.kotlinx.coroutines.android)
         }
 
         jvmMain.dependencies {
-            implementation(project(":core"))
-            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.sqlite.jdbc)
+            implementation(libs.maven.slf4j.provider)
+            implementation(libs.kotlinx.coroutines.swing)
+        }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
+
+        }
+
+        commonMain.dependencies {
+            api(project(":core"))
+            implementation(project(":localization"))
+            api(libs.gplay.scrapper.core)
+            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kermit)
             implementation(libs.platform.tools.release.fetcher)
-            implementation(libs.kotlinx.coroutines.swing)
-            implementation(libs.sqlite.jdbc)
-            implementation(libs.maven.slf4j.provider)
         }
 
     }
@@ -55,7 +67,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
     }
 }
 
@@ -106,4 +118,3 @@ mavenPublishing {
 
     signAllPublications()
 }
-

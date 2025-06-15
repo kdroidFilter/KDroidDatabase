@@ -25,7 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import sample.app.models.AppInfoWithExtras
+import io.github.kdroidfilter.database.dao.AppInfoWithExtras
 import sample.app.utils.createImageRequest
 
 @Composable
