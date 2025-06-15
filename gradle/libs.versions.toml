@@ -61,3 +61,4 @@ compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 vannitktech-maven-publish = {id = "com.vanniktech.maven.publish", version = "0.32.0"}
+sql-delight = { id = "app.cash.sqldelight", version = "2.1.0"}

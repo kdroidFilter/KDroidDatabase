@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization).apply(false)
     alias(libs.plugins.android.application).apply(false)
     alias(libs.plugins.vannitktech.maven.publish).apply(false)
+    alias(libs.plugins.sql.delight).apply(false)
 }
 
 // Task to run both generators

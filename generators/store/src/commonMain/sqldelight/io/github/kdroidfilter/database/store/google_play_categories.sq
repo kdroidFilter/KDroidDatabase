@@ -1,0 +1,45 @@
+CREATE TABLE IF NOT EXISTS google_play_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    category_id TEXT NOT NULL,
+    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+    UNIQUE(name, category_id)
+);
+
+-- Insert a new Google Play category
+insertGooglePlayCategory:
+INSERT INTO google_play_categories (name, category_id)
+VALUES (?, ?);
+
+-- Delete a Google Play category by ID
+deleteGooglePlayCategory:
+DELETE FROM google_play_categories
+WHERE id = ?;
+
+-- Delete a Google Play category by category_id
+deleteGooglePlayCategoryByCategoryId:
+DELETE FROM google_play_categories
+WHERE category_id = ?;
+
+-- Get all Google Play categories
+getAllGooglePlayCategories:
+SELECT *
+FROM google_play_categories;
+
+-- Get Google Play category by ID
+getGooglePlayCategoryById:
+SELECT *
+FROM google_play_categories
+WHERE id = ?;
+
+-- Get Google Play category by category_id
+getGooglePlayCategoryByCategoryId:
+SELECT *
+FROM google_play_categories
+WHERE category_id = ?;
+
+-- Get Google Play category by name
+getGooglePlayCategoryByName:
+SELECT *
+FROM google_play_categories
+WHERE name = ?;

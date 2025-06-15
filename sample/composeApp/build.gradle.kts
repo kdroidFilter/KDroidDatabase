@@ -6,8 +6,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.android.application)
-    id("app.cash.sqldelight") version "2.1.0"
-
+    alias(libs.plugins.sql.delight)
 }
 
 kotlin {

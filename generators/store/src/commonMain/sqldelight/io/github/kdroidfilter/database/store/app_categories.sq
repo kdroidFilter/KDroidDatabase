@@ -1,0 +1,33 @@
+CREATE TABLE IF NOT EXISTS app_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_name TEXT UNIQUE NOT NULL, -- TORAH, COMMUNICATION, etc.
+    description TEXT,
+    created_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
+-- Insert a new category
+insertCategory:
+INSERT INTO app_categories (category_name, description)
+VALUES (?, ?);
+
+-- Delete a category by ID
+deleteCategory:
+DELETE FROM app_categories
+WHERE id = ?;
+
+-- Get all categories
+getAllCategories:
+SELECT *
+FROM app_categories;
+
+-- Get category by ID
+getCategoryById:
+SELECT *
+FROM app_categories
+WHERE id = ?;
+
+-- Get category by name
+getCategoryByName:
+SELECT *
+FROM app_categories
+WHERE category_name = ?;

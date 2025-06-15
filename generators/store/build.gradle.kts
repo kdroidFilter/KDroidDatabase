@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.sql.delight)
 }
 
 
@@ -26,6 +27,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sqlite.jdbc)
             implementation(libs.maven.slf4j.provider)
+            implementation(libs.sqldelight.sqlite.driver)
         }
 
 
@@ -40,6 +42,14 @@ kotlin {
         }
     }
 
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("io.github.kdroidfilter.database.store")
+        }
+    }
 }
 
 tasks.register<JavaExec>("runStoreExtractor") {

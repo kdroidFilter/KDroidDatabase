@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS developers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    developer_id TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT,
+    website TEXT,
+    address TEXT,
+    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+    updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
+-- Insert a new developer
+insertDeveloper:
+INSERT INTO developers (developer_id, name, email, website, address)
+VALUES (?, ?, ?, ?, ?);
+
+-- Delete a developer by ID
+deleteDeveloper:
+DELETE FROM developers
+WHERE id = ?;
+
+-- Delete a developer by developer_id
+deleteDeveloperByDeveloperId:
+DELETE FROM developers
+WHERE developer_id = ?;
+
+-- Get all developers
+getAllDevelopers:
+SELECT *
+FROM developers;
+
+-- Get developer by ID
+getDeveloperById:
+SELECT *
+FROM developers
+WHERE id = ?;
+
+-- Get developer by developer_id
+getDeveloperByDeveloperId:
+SELECT *
+FROM developers
+WHERE developer_id = ?;
+
+-- Get developer by name
+getDeveloperByName:
+SELECT *
+FROM developers
+WHERE name = ?;

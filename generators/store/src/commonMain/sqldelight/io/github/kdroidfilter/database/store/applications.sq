@@ -1,0 +1,150 @@
+CREATE TABLE IF NOT EXISTS applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    app_id TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    description_html TEXT,
+    summary TEXT,
+    installs TEXT,
+    min_installs INTEGER DEFAULT 0,
+    real_installs INTEGER DEFAULT 0,
+    score REAL DEFAULT 0.0,
+    ratings INTEGER DEFAULT 0,
+    reviews INTEGER DEFAULT 0,
+    histogram TEXT, -- JSON array
+    price REAL DEFAULT 0.0,
+    free INTEGER DEFAULT 1, -- BOOLEAN
+    currency TEXT,
+    sale INTEGER DEFAULT 0, -- BOOLEAN
+    sale_time INTEGER,
+    original_price REAL,
+    sale_text TEXT,
+    offers_iap INTEGER DEFAULT 0, -- BOOLEAN
+    in_app_product_price TEXT,
+    developer_id INTEGER NOT NULL, -- Référence vers developers
+    privacy_policy TEXT,
+    genre TEXT,
+    genre_id TEXT,
+    icon TEXT,
+    header_image TEXT,
+    screenshots TEXT, -- JSON array
+    video TEXT,
+    video_image TEXT,
+    content_rating TEXT,
+    content_rating_description TEXT,
+    ad_supported INTEGER DEFAULT 0, -- BOOLEAN
+    contains_ads INTEGER DEFAULT 0, -- BOOLEAN
+    released TEXT,
+    updated INTEGER,
+    version TEXT DEFAULT 'Varies with device',
+    comments TEXT, -- JSON array
+    url TEXT,
+    app_category_id INTEGER NOT NULL, -- Référence vers app_categories
+    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+    updated_at INTEGER DEFAULT (strftime('%s', 'now')),
+    FOREIGN KEY (developer_id) REFERENCES developers(id),
+    FOREIGN KEY (app_category_id) REFERENCES app_categories(id)
+);
+
+-- Insert a new application
+insertApplication:
+INSERT INTO applications (
+    app_id, title, description, description_html, summary, 
+    installs, min_installs, real_installs, score, ratings, 
+    reviews, histogram, price, free, currency, 
+    sale, sale_time, original_price, sale_text, offers_iap, 
+    in_app_product_price, developer_id, privacy_policy, genre, genre_id, 
+    icon, header_image, screenshots, video, video_image, 
+    content_rating, content_rating_description, ad_supported, contains_ads, released, 
+    updated, version, comments, url, app_category_id
+)
+VALUES (
+    ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?, 
+    ?, ?, ?, ?, ?
+);
+
+-- Delete an application by ID
+deleteApplication:
+DELETE FROM applications
+WHERE id = ?;
+
+-- Delete an application by app_id
+deleteApplicationByAppId:
+DELETE FROM applications
+WHERE app_id = ?;
+
+-- Get all applications
+getAllApplications:
+SELECT *
+FROM applications;
+
+-- Get application by ID
+getApplicationById:
+SELECT *
+FROM applications
+WHERE id = ?;
+
+-- Get application by app_id
+getApplicationByAppId:
+SELECT *
+FROM applications
+WHERE app_id = ?;
+
+-- Search for applications by title
+searchApplicationsByTitle:
+SELECT *
+FROM applications
+WHERE title LIKE '%' || ? || '%';
+
+-- Search for applications by description
+searchApplicationsByDescription:
+SELECT *
+FROM applications
+WHERE description LIKE '%' || ? || '%';
+
+-- Search for applications by title or description
+searchApplications:
+SELECT *
+FROM applications
+WHERE title LIKE '%' || ? || '%' OR description LIKE '%' || ? || '%';
+
+-- Get applications by category
+getApplicationsByCategory:
+SELECT a.*
+FROM applications a
+JOIN app_categories c ON a.app_category_id = c.id
+WHERE c.id = ?;
+
+-- Get applications by category name
+getApplicationsByCategoryName:
+SELECT a.*
+FROM applications a
+JOIN app_categories c ON a.app_category_id = c.id
+WHERE c.category_name = ?;
+
+-- Get applications by developer
+getApplicationsByDeveloper:
+SELECT a.*
+FROM applications a
+JOIN developers d ON a.developer_id = d.id
+WHERE d.id = ?;
+
+-- Get applications by developer name
+getApplicationsByDeveloperName:
+SELECT a.*
+FROM applications a
+JOIN developers d ON a.developer_id = d.id
+WHERE d.name = ?;
+
+-- Get applications by developer_id
+getApplicationsByDeveloperId:
+SELECT a.*
+FROM applications a
+JOIN developers d ON a.developer_id = d.id
+WHERE d.developer_id = ?;
