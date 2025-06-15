@@ -383,6 +383,14 @@ object SqliteStoreBuilder {
 
             if (downloadResults[language] == true) {
                 logger.i { "📄 Using downloaded database for $language, updating with new packages only..." }
+                // Get release name from environment variable or generate timestamp
+                val releaseName = System.getenv("RELEASE_NAME") ?: LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
+                logger.i { "🏷️ Updating version to: $releaseName for language: $language" }
+
+                // Update version even for downloaded databases
+                insertVersion(releaseName, dbPath)
+
                 // Update the downloaded database with only new packages
                 updatePackagesIfNotExists(appPoliciesDir, dbPath, language, country)
             } else {
