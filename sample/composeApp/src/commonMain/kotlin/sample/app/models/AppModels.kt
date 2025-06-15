@@ -11,7 +11,6 @@ enum class Screen {
 // Extended class to add additional information to the GooglePlayApplicationInfo model
 data class AppInfoWithExtras(
     val id: Long,
-    val categoryRawName: String,
     val categoryLocalizedName: String,
     val app: GooglePlayApplicationInfo
 )

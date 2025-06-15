@@ -69,25 +69,12 @@ fun createAppInfoWithExtras(
     category: App_categories
 ): AppInfoWithExtras {
     val appInfo = createAppInfoFromDatabaseData(app, developer, category)
-    
-    // Try to convert the category name to an AppCategory enum
-    val categoryEnum = try {
-        AppCategory.valueOf(category.category_name)
-    } catch (e: IllegalArgumentException) {
-        // If the category is not found in the enum, use null
-        null
-    }
 
-    // Get the localized name of the category if possible
-    val localizedCategoryName = if (categoryEnum != null) {
-        LocalizedAppCategory.getLocalizedName(categoryEnum, getDeviceLanguage())
-    } else {
-        category.category_name // Fallback to raw name if not found in enum
-    }
+    val categoryEnum = AppCategory.valueOf(category.category_name)
+    val localizedCategoryName = LocalizedAppCategory.getLocalizedName(categoryEnum, getDeviceLanguage())
 
     return AppInfoWithExtras(
         id = app.id,
-        categoryRawName = category.category_name,
         categoryLocalizedName = localizedCategoryName,
         app = appInfo
     )
@@ -103,7 +90,7 @@ fun loadApplicationsFromDatabase(database: Database): List<AppInfoWithExtras> {
     return applicationsQueries.getAllApplications().executeAsList().map { app ->
         val developer = developersQueries.getDeveloperById(app.developer_id).executeAsOne()
         val category = categoriesQueries.getCategoryById(app.app_category_id).executeAsOne()
-        
+
         createAppInfoWithExtras(app, developer, category)
     }
 }
@@ -118,7 +105,7 @@ fun searchApplicationsInDatabase(database: Database, query: String): List<AppInf
     return applicationsQueries.searchApplications(query, query).executeAsList().map { app ->
         val developer = developersQueries.getDeveloperById(app.developer_id).executeAsOne()
         val category = categoriesQueries.getCategoryById(app.app_category_id).executeAsOne()
-        
+
         createAppInfoWithExtras(app, developer, category)
     }
 }
