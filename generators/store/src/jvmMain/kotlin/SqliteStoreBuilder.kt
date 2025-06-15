@@ -1,17 +1,9 @@
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import createSqlDriver
 import co.touchlab.kermit.Logger
 import com.kdroid.gplayscrapper.core.model.GooglePlayApplicationInfo
 import com.kdroid.gplayscrapper.services.getGooglePlayApplicationInfo
 import io.github.kdroidfilter.database.core.AppCategory
-import io.github.kdroidfilter.database.store.App_categories
-import io.github.kdroidfilter.database.store.App_categoriesQueries
-import io.github.kdroidfilter.database.store.Applications
-import io.github.kdroidfilter.database.store.ApplicationsQueries
-import io.github.kdroidfilter.database.store.Database
-import io.github.kdroidfilter.database.store.Developers
-import io.github.kdroidfilter.database.store.DevelopersQueries
-import io.github.kdroidfilter.database.store.VersionQueries
+import io.github.kdroidfilter.database.store.*
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -90,20 +82,20 @@ object SqliteStoreBuilder {
         Database.Schema.create(driver)
 
         // Insert categories
-        insertCategories()
+        insertCategories(outputDbPath)
 
         // Insert version information
-        insertVersion(releaseName)
+        insertVersion(releaseName, outputDbPath)
 
         // Insert packages
-        upsertPackages(appPoliciesDir)
+        upsertPackages(appPoliciesDir, outputDbPath)
 
         logger.i { "✅ SQLite database created at $outputDbPath" }
     }
 
 
-    private fun insertCategories() {
-        val appCategoriesQueries = App_categoriesQueries(createSqlDriver())
+    private fun insertCategories(outputDbPath: Path) {
+        val appCategoriesQueries = App_categoriesQueries(createSqlDriver(outputDbPath))
         var count = 0
 
         AppCategory.entries.forEach { cat ->
@@ -122,8 +114,8 @@ object SqliteStoreBuilder {
         logger.i { "✅ Inserted $count categories" }
     }
 
-    private fun insertVersion(releaseName: String) {
-        val versionQueries = VersionQueries(createSqlDriver())
+    private fun insertVersion(releaseName: String, outputDbPath: Path) {
+        val versionQueries = VersionQueries(createSqlDriver(outputDbPath))
 
         // Clear existing entries
         versionQueries.clearVersions()
@@ -134,7 +126,7 @@ object SqliteStoreBuilder {
         logger.i { "✅ Inserted version info: $releaseName" }
     }
 
-    private fun upsertPackages(dir: Path) {
+    private fun upsertPackages(dir: Path, outputDbPath: Path) {
         // Get existing applications to avoid re-fetching
         val existingApps = mutableMapOf<String, GooglePlayApplicationInfo?>()
 
@@ -147,7 +139,7 @@ object SqliteStoreBuilder {
                     .uppercase().replace('-', '_')
 
                 // Get or create the category
-                val appCategoriesQueries = App_categoriesQueries(createSqlDriver())
+                val appCategoriesQueries = App_categoriesQueries(createSqlDriver(outputDbPath))
                 val category = appCategoriesQueries
                     .getCategoryByName(categoryName)
                     .executeAsOneOrNull() ?: run {
@@ -170,7 +162,7 @@ object SqliteStoreBuilder {
 
                 if (appInfo != null) {
                     // Create DevelopersQueries instance
-                    val developersQueries = DevelopersQueries(createSqlDriver())
+                    val developersQueries = DevelopersQueries(createSqlDriver(outputDbPath))
 
                     // Get or create the developer
                     val developer = developersQueries
@@ -188,7 +180,7 @@ object SqliteStoreBuilder {
                         }
 
                     // Create ApplicationsQueries instance
-                    val applicationsQueries = ApplicationsQueries(createSqlDriver())
+                    val applicationsQueries = ApplicationsQueries(createSqlDriver(outputDbPath))
 
                     // Check if the application already exists
                     val existingApp = applicationsQueries
