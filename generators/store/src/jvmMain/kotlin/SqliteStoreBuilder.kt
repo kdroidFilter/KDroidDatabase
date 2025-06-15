@@ -297,6 +297,7 @@ object SqliteStoreBuilder {
                 content_rating_description = appInfo.contentRatingDescription,
                 ad_supported = if (appInfo.adSupported) 1 else 0,
                 contains_ads = if (appInfo.containsAds) 1 else 0,
+                is_recommended_in_store = 0,
                 released = appInfo.released,
                 updated = appInfo.updated,
                 version = appInfo.version,
@@ -315,8 +316,11 @@ object SqliteStoreBuilder {
 
     /**
      * Builds or updates databases for all three languages, downloading existing ones first
+     * @param appPoliciesDir Directory containing app policies
+     * @param baseDbPath Base path used to determine the output directory
+     * @param forceFromScratch If true, forces building databases from scratch instead of downloading existing ones
      */
-    suspend fun buildOrUpdateMultiLanguageDatabases(appPoliciesDir: Path, baseDbPath: Path) {
+    suspend fun buildOrUpdateMultiLanguageDatabases(appPoliciesDir: Path, baseDbPath: Path, forceFromScratch: Boolean = false) {
         val outputDir = baseDbPath.parent
         val languages = mapOf(
             "en" to "us",
@@ -326,13 +330,19 @@ object SqliteStoreBuilder {
 
         logger.i { "🔄 Starting multi-language database build/update process..." }
 
-        // First, try to download existing databases
-        val downloadResults = downloadLatestDatabases(baseDbPath)
+        // Determine if we should try to download existing databases or force build from scratch
+        val downloadResults = if (forceFromScratch) {
+            logger.i { "🔨 Force building from scratch enabled, skipping download of existing databases" }
+            emptyMap()
+        } else {
+            // Try to download existing databases
+            downloadLatestDatabases(baseDbPath)
+        }
 
         languages.forEach { (language, country) ->
             val dbPath = outputDir.resolve("store-database-$language.db")
 
-            if (downloadResults[language] == true) {
+            if (!forceFromScratch && downloadResults[language] == true) {
                 logger.i { "📄 Using downloaded database for $language, updating with new packages only..." }
                 // Get release name from environment variable or generate timestamp
                 val releaseName = System.getenv("RELEASE_NAME") ?: LocalDateTime.now()

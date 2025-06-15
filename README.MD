@@ -266,6 +266,8 @@ You can optionally include the following boolean flags in your policy files to h
 
 * **`requiresPlayStoreInstallation`**: Set to `true` if the app must be installed from the Google Play Store for specific reasons (e.g., licensing requirements, app integrity verification, or access to Play Store-specific features). This indicates that the app should not be sideloaded from alternative sources.
 
+* **`isRecommendedInStore`**: Set to `true` if the app should be recommended in the store. By default, this is set to `false`. When set to `true`, the app will be highlighted or featured in the store, making it more visible to users.
+
 These fields are optional but enforced by default: apps with these flags will not appear in the store or be granted internet access unless the user has explicitly accepted the risk. Additionally, apps with `hasUnmodestImage` or `isPotentiallyDangerous` set to `true` will be excluded from the **REDUCED\_RISK** mode.
 
 Apps marked with any of these flags will only appear in the store or receive internet access **if the user has explicitly acknowledged the risk** and chosen to enable them manually.
@@ -301,6 +303,7 @@ When you mark an app with `requiresPlayStoreInstallation: true`, you're indicati
   "category": "FINANCE",
   "minimumVersionCode": 100,
   "hasUnmodestImage": true,
+  "isRecommendedInStore": false,
   "networkPolicy": {
     "mode": "FULL_OPEN"
   }
