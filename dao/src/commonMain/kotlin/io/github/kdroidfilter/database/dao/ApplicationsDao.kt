@@ -33,7 +33,9 @@ object ApplicationsDao {
             score = app.score ?: 0.0,
             ratings = app.ratings ?: 0L,
             reviews = app.reviews ?: 0L,
-            histogram = app.histogram?.removeSurrounding("[", "]")?.split(", ")?.map { it.toLongOrNull() ?: 0L } ?: emptyList(),
+            histogram = app.histogram?.removeSurrounding("[", "]")?.split(", ")?.map {
+                it.toLongOrNull() ?: 0L
+            } ?: emptyList(),
             price = app.price ?: 0.0,
             free = app.free == 1L,
             currency = app.currency ?: "",

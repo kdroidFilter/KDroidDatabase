@@ -1,9 +1,7 @@
 package io.github.kdroidfilter.database.downloader
 
 import co.touchlab.kermit.Logger
-import io.github.kdroidfilter.platformtools.releasefetcher.downloader.Downloader
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
-import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URI
@@ -13,7 +11,6 @@ import java.net.URI
  */
 class DatabaseDownloader {
     private val logger = Logger.withTag("DatabaseDownloader")
-    private val downloader = Downloader()
     private val owner = "kdroidFilter"
     private val repo = "KDroidDatabase"
 
@@ -22,7 +19,7 @@ class DatabaseDownloader {
      * @param outputDir The directory where the database files will be saved
      * @return Map of language codes to download success status
      */
-    fun downloadLatestStoreDatabases(outputDir: String): Map<String, Boolean> = runBlocking {
+    suspend fun downloadLatestStoreDatabases(outputDir: String): Map<String, Boolean> {
         val languages = listOf("en", "fr", "he")
         val results = mutableMapOf<String, Boolean>()
 
@@ -54,7 +51,9 @@ class DatabaseDownloader {
 
                             // Verify the file was downloaded successfully
                             if (outputDbFile.exists() && outputDbFile.length() > 0) {
-                                logger.i { "✅ Store database $lang downloaded successfully to ${outputDbFile.absolutePath}" }
+                                logger.i {
+                                    "✅ Store database $lang downloaded successfully to ${outputDbFile.absolutePath}"
+                                }
                                 results[lang] = true
                             } else {
                                 logger.w { "⚠️ Downloaded file for $lang is empty or does not exist" }
@@ -78,7 +77,7 @@ class DatabaseDownloader {
             languages.forEach { results[it] = false }
         }
 
-        return@runBlocking results
+        return results
     }
 
     /**
@@ -86,7 +85,7 @@ class DatabaseDownloader {
      * @param outputDir The directory where the database file will be saved
      * @return Boolean indicating whether the download was successful
      */
-    fun downloadLatestPoliciesDatabase(outputDir: String): Boolean = runBlocking {
+    suspend fun downloadLatestPoliciesDatabase(outputDir: String): Boolean {
         try {
             logger.i { "🔄 Attempting to download the latest policies database..." }
             val fetcher = GitHubReleaseFetcher(owner = owner, repo = repo)
@@ -114,22 +113,22 @@ class DatabaseDownloader {
                     // Verify the file was downloaded successfully
                     if (outputDbFile.exists() && outputDbFile.length() > 0) {
                         logger.i { "✅ Policies database downloaded successfully to ${outputDbFile.absolutePath}" }
-                        return@runBlocking true
+                        return true
                     } else {
                         logger.w { "⚠️ Downloaded policies database file is empty or does not exist" }
-                        return@runBlocking false
+                        return false
                     }
                 } else {
                     logger.w { "⚠️ No policies database asset found in the latest release" }
-                    return@runBlocking false
+                    return false
                 }
             } else {
                 logger.w { "⚠️ No assets found in the latest release" }
-                return@runBlocking false
+                return false
             }
         } catch (e: Exception) {
             logger.e(e) { "❌ Failed to download policies database: ${e.message}" }
-            return@runBlocking false
+            return false
         }
     }
 

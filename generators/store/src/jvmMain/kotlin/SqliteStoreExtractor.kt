@@ -1,3 +1,4 @@
+import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 
 fun main() {
@@ -12,5 +13,7 @@ fun main() {
     val baseDbPath = projectDir.resolve("build/store-database.db")
 
     // Build databases in multiple languages (English, French, Hebrew)
-    SqliteStoreBuilder.buildOrUpdateMultiLanguageDatabases(policiesDir, baseDbPath)
+    runBlocking {
+        SqliteStoreBuilder.buildOrUpdateMultiLanguageDatabases(policiesDir, baseDbPath)
+    }
 }

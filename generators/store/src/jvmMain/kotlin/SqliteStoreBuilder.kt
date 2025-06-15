@@ -4,11 +4,7 @@ import com.kdroid.gplayscrapper.core.model.GooglePlayApplicationInfo
 import com.kdroid.gplayscrapper.services.getGooglePlayApplicationInfo
 import io.github.kdroidfilter.database.core.AppCategory
 import io.github.kdroidfilter.database.downloader.DatabaseDownloader
-import io.github.kdroidfilter.database.store.App_categoriesQueries
-import io.github.kdroidfilter.database.store.ApplicationsQueries
-import io.github.kdroidfilter.database.store.Database
-import io.github.kdroidfilter.database.store.DevelopersQueries
-import io.github.kdroidfilter.database.store.VersionQueries
+import io.github.kdroidfilter.database.store.*
 import kotlinx.coroutines.runBlocking
 import java.nio.file.Files
 import java.nio.file.Path
@@ -18,7 +14,12 @@ import java.time.format.DateTimeFormatter
 object SqliteStoreBuilder {
     private val logger = Logger.withTag("SqliteStoreBuilder")
 
-    fun buildDatabase(appPoliciesDir: Path, outputDbPath: Path, language: String = "en", country: String = "us") {
+    fun buildDatabase(
+        appPoliciesDir: Path,
+        outputDbPath: Path,
+        language: String = "en",
+        country: String = "us"
+    ) {
         // Get release name from environment variable or generate timestamp
         val releaseName = System.getenv("RELEASE_NAME") ?: LocalDateTime.now()
             .format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
@@ -95,12 +96,15 @@ object SqliteStoreBuilder {
                 val categoryId = getOrCreateCategory(categoryName, appCategoriesQueries)
 
                 // Fetch application info from Google Play with specified language and country
-                val appInfo = runBlocking {
-                    existingApps.getOrPut(packageName) {
-                        runCatching {
-                            getGooglePlayApplicationInfo(packageName, language, country)
-                        }.getOrNull()
+                val appInfo = existingApps[packageName] ?: try {
+                    runBlocking {
+                        getGooglePlayApplicationInfo(packageName, language, country).also { 
+                            existingApps[packageName] = it 
+                        }
                     }
+                } catch (e: Exception) {
+                    logger.w { "⚠️ Failed to fetch info for $packageName: ${e.message}" }
+                    null
                 }
 
                 if (appInfo != null) {
@@ -131,7 +135,7 @@ object SqliteStoreBuilder {
      * @param baseDbPath The base path used to determine the output directory
      * @return Map of language codes to download success status
      */
-    private fun downloadLatestDatabases(baseDbPath: Path): Map<String, Boolean> {
+    private suspend fun downloadLatestDatabases(baseDbPath: Path): Map<String, Boolean> {
         val outputDir = baseDbPath.parent.toString()
 
         // Use the DatabaseDownloader to download the latest databases
@@ -169,8 +173,8 @@ object SqliteStoreBuilder {
                     val categoryId = getOrCreateCategory(categoryName, appCategoriesQueries)
 
                     // Fetch application info from Google Play with specified language and country
-                    val appInfo = runBlocking {
-                        existingApps.getOrPut(packageName) {
+                    val appInfo = existingApps.getOrPut(packageName) {
+                        runBlocking {
                             runCatching {
                                 getGooglePlayApplicationInfo(packageName, language, country)
                             }.getOrNull()
@@ -312,7 +316,7 @@ object SqliteStoreBuilder {
     /**
      * Builds or updates databases for all three languages, downloading existing ones first
      */
-    fun buildOrUpdateMultiLanguageDatabases(appPoliciesDir: Path, baseDbPath: Path) {
+    suspend fun buildOrUpdateMultiLanguageDatabases(appPoliciesDir: Path, baseDbPath: Path) {
         val outputDir = baseDbPath.parent
         val languages = mapOf(
             "en" to "us",
