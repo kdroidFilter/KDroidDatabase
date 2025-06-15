@@ -58,3 +58,15 @@ tasks.register<JavaExec>("runPolicyExtractor") {
     mainClass.set("SqlitePolicyExtractorKt")
 
 }
+
+tasks.register<JavaExec>("validateJson") {
+    group = "validation"
+    description = "Validates all JSON policy files for correctness"
+
+    dependsOn(kotlin.jvm().compilations["main"].compileTaskProvider)
+    classpath = files(
+        kotlin.jvm().compilations["main"].output.allOutputs,
+        kotlin.jvm().compilations["main"].runtimeDependencyFiles
+    )
+    mainClass.set("JsonValidatorKt")
+}
