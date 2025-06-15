@@ -29,7 +29,7 @@ dependencyResolutionManagement {
     }
 }
 include(":core")
-include(":generator")
-include(":storegenerator")
+include(":generators:policies")
+include(":generators:store")
 include(":sample:composeApp")
 

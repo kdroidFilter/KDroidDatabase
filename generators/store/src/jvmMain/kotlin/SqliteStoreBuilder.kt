@@ -1,5 +1,3 @@
-package io.github.kdroidfilter.database.storegenerator
-
 import co.touchlab.kermit.Logger
 import com.kdroid.gplayscrapper.services.getGooglePlayApplicationInfo
 import io.github.kdroidfilter.database.core.AppCategory
@@ -223,11 +221,4 @@ object SqliteStoreBuilder {
             }
         }
     }
-}
-
-fun main() {
-    val root = Path.of("").toAbsolutePath()
-    val policies = root.resolve("../app-policies")
-    val output = root.resolve("build/store-database.db")
-    SqliteStoreBuilder.buildDatabase(policies, output)
 }

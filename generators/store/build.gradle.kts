@@ -10,6 +10,8 @@ kotlin {
     jvmToolchain(17)
 
     jvm()
+
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core"))
@@ -17,6 +19,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kermit)
+            implementation(libs.gplay.scrapper)
+            implementation(libs.gplay.scrapper.core)
+            implementation(libs.platform.tools.release.fetcher)
         }
 
         commonTest.dependencies {
@@ -40,5 +45,18 @@ kotlin {
             }
         }
     }
+
+}
+
+tasks.register<JavaExec>("runStoreExtractor") {
+    group = "extraction"
+    description = "Runs the SQLite store extractor"
+
+    dependsOn(kotlin.jvm().compilations["main"].compileTaskProvider)
+    classpath = files(
+        kotlin.jvm().compilations["main"].output.allOutputs,
+        kotlin.jvm().compilations["main"].runtimeDependencyFiles
+    )
+    mainClass.set("SqliteStoreExtractorKt")
 
 }
