@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
-group = "io.github.kdroidfilter.database"
-version = "1.0.0"
 
 kotlin {
     jvmToolchain(17)
@@ -13,25 +11,21 @@ kotlin {
 
 
     sourceSets {
-        commonMain.dependencies {
+        jvmMain.dependencies {
+            implementation(kotlin("test"))
+        }
+
+        jvmMain.dependencies {
             implementation(project(":core"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kermit)
             implementation(libs.platform.tools.release.fetcher)
-        }
-
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-        }
-
-        jvmMain.dependencies {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sqlite.jdbc)
             implementation(libs.maven.slf4j.provider)
         }
-
 
     }
 
