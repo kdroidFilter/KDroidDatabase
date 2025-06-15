@@ -11,8 +11,6 @@ import java.net.URI
  */
 class DatabaseDownloader {
     private val logger = Logger.withTag("DatabaseDownloader")
-    private val owner = "kdroidFilter"
-    private val repo = "KDroidDatabase"
 
     /**
      * Downloads the latest store databases for all three languages (en, fr, he) from GitHub releases.
@@ -25,7 +23,7 @@ class DatabaseDownloader {
 
         try {
             logger.i { "🔄 Attempting to download the latest store databases for all languages..." }
-            val fetcher = GitHubReleaseFetcher(owner = owner, repo = repo)
+            val fetcher = GitHubReleaseFetcher(owner = GitHubConstants.OWNER, repo = GitHubConstants.REPO)
             val latestRelease = fetcher.getLatestRelease()
 
             if (latestRelease != null && latestRelease.assets.isNotEmpty()) {
@@ -88,7 +86,7 @@ class DatabaseDownloader {
     suspend fun downloadLatestPoliciesDatabase(outputDir: String): Boolean {
         try {
             logger.i { "🔄 Attempting to download the latest policies database..." }
-            val fetcher = GitHubReleaseFetcher(owner = owner, repo = repo)
+            val fetcher = GitHubReleaseFetcher(owner = GitHubConstants.OWNER, repo = GitHubConstants.REPO)
             val latestRelease = fetcher.getLatestRelease()
 
             if (latestRelease != null && latestRelease.assets.isNotEmpty()) {
@@ -150,4 +148,5 @@ class DatabaseDownloader {
             }
         }
     }
+
 }
