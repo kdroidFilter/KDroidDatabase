@@ -402,3 +402,64 @@ if (policiesResult) {
     println("Failed to download policies database")
 }
 ```
+
+### DAO Module
+
+The DAO (Data Access Object) module provides a clean interface for database operations, abstracting away direct SQL queries. It includes DAOs for accessing application data and version information, as well as utility classes for working with the data.
+
+```kotlin
+dependencies {
+    implementation("io.github.kdroidfilter.database.dao:core:<version>")
+}
+```
+
+#### Key Components
+
+- **ApplicationsDao**: Provides methods for loading and searching applications in the database
+- **VersionDao**: Handles database version management operations
+- **AppInfoWithExtras**: A data class that extends the GooglePlayApplicationInfo model with additional information
+
+#### Usage Example
+
+```kotlin
+// Load applications from the database
+val applications = ApplicationsDao.loadApplicationsFromDatabase(
+    database = database,
+    deviceLanguage = "en",
+    creator = { id, categoryLocalizedName, appInfo ->
+        AppInfoWithExtras(
+            id = id,
+            categoryLocalizedName = categoryLocalizedName,
+            app = appInfo
+        )
+    }
+)
+
+// Search for applications in the database
+val searchResults = ApplicationsDao.searchApplicationsInDatabase(
+    database = database,
+    query = "calculator",
+    deviceLanguage = "en",
+    creator = { id, categoryLocalizedName, appInfo ->
+        AppInfoWithExtras(
+            id = id,
+            categoryLocalizedName = categoryLocalizedName,
+            app = appInfo
+        )
+    }
+)
+
+// Get the current database version
+val currentVersion = VersionDao.getCurrentVersion(database)
+
+// Update the database version
+val updateSuccess = VersionDao.updateVersion(database, "NEWVERSION")
+```
+
+#### Note on Sample Code
+
+For a simplified overview of how to use the database, please consult the example in the `sample` directory. The sample demonstrates basic database operations including downloading, querying, and displaying data.
+
+> ⚠️ **Important Warning**: The sample code uses `runBlocking` for database downloads, which is **prohibited** in production code. This is only done for demonstration purposes. In real applications, always use proper coroutine scopes and avoid blocking the main thread.
+
+The DAO module is actively evolving to satisfy more needs and use cases. Contributions and pull requests are welcome to enhance its functionality and performance.
