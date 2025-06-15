@@ -17,5 +17,6 @@
       ]
     }
   },
-  "minimumVersionCode": 1030416
+  "minimumVersionCode": 1030416,
+  "isRecommendedInStore": true
 }
