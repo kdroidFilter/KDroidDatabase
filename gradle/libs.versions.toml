@@ -18,9 +18,11 @@ sqlDelight = "2.1.0"
 sqlJs = "1.8.0"
 webPackPlugin = "9.1.0"
 gplayscrapper = "0.3.1"
+kotlinxBrowserWasmJs = "0.3"
 
 [libraries]
 
+androidcontextprovider = { module = "io.github.kdroidfilter:androidcontextprovider", version.ref = "netfreetoolsCertificates" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilNetworkOkhttp" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -46,6 +48,9 @@ sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", ver
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqlDelight" }
 sqldelight-web-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelight" }
+
+kotlinx-browser-wasm-js = { module = "org.jetbrains.kotlinx:kotlinx-browser-wasm-js", version.ref = "kotlinxBrowserWasmJs" }
+
 
 [plugins]
 

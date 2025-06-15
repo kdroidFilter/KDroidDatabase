@@ -320,13 +320,26 @@ All of these apps are tagged for additional caution. They will only be functiona
 
 ---
 
-## Importing the Core Module
+## Importing KDroid Database Modules
 
-If you want to use the core module in your own project, you can add it as a dependency:
+KDroid Database provides multiple modules that you can use in your own projects:
+
+### Core Module
+
+The core module contains the essential data structures and enums for the KDroid Database, including the `AppCategory` enum and policy definitions.
 
 ```kotlin
-
 dependencies {
-    implementation("io.github.kdroidfilter.database:core:0.1.0")
+    implementation("io.github.kdroidfilter.database:core:<version>")
+}
+```
+
+### Localization Module
+
+The localization module extends the core module to provide localized category names in multiple languages (English, Hebrew, and French). It includes platform-specific extensions for Android and JVM.
+
+```kotlin
+dependencies {
+    implementation("io.github.kdroidfilter.database:localization:<version>")
 }
 ```

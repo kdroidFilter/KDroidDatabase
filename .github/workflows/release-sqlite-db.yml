@@ -1,7 +1,8 @@
 name: Release – SQLite DBs (Policies & Store)
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - master
 
@@ -10,9 +11,6 @@ permissions:
 
 jobs:
   build-and-release:
-    if: >
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true) ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
 
     steps:
