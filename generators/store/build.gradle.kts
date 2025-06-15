@@ -17,6 +17,7 @@ kotlin {
         jvmMain.dependencies {
             implementation(project(":core"))
             implementation(project(":dao"))
+            implementation(project(":downloader"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.serialization.json)

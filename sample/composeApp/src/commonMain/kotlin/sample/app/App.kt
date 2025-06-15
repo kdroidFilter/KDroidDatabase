@@ -46,6 +46,7 @@ import kotlinx.coroutines.withContext
 import java.nio.file.Path
 import io.github.kdroidfilter.database.dao.ApplicationsDao
 import io.github.kdroidfilter.database.dao.AppInfoWithExtras
+import io.github.kdroidfilter.database.downloader.DatabaseDownloader
 import sample.app.ui.AppDetailDialog
 import sample.app.ui.AppRow
 import sample.app.ui.SearchScreen
@@ -143,6 +144,30 @@ fun App() {
                             MainScope().launch {
                                 try {
                                     withContext(Dispatchers.IO) {
+                                        // Check if database version is up to date
+                                        val isUpToDate = sample.app.utils.isDatabaseVersionUpToDate(database)
+
+                                        // If not up to date, download the new version
+                                        if (!isUpToDate) {
+                                            logger.i { "Database is not up to date. Downloading new version..." }
+                                            val downloader = DatabaseDownloader()
+                                            val success = downloader.downloadLatestStoreDatabaseForLanguage(
+                                                getDatabasePath().parent.toString(), 
+                                                getDeviceLanguage()
+                                            )
+
+                                            if (success) {
+                                                message = "Database updated to the latest version!"
+                                            } else {
+                                                message = "Failed to download the latest database version."
+                                                isRefreshing = false
+                                                return@withContext
+                                            }
+                                        } else {
+                                            logger.i { "Database is already up to date." }
+                                        }
+
+                                        // Load applications from the database
                                         val apps = ApplicationsDao.loadApplicationsFromDatabase(
                                             database = database,
                                             deviceLanguage = getDeviceLanguage(),
@@ -156,7 +181,9 @@ fun App() {
                                         )
                                         applications = apps
                                     }
-                                    message = "Database refreshed successfully!"
+                                    if (message == null) {
+                                        message = "Database refreshed successfully!"
+                                    }
                                 } catch (e: Exception) {
                                     logger.e { "Refresh error: ${e.message}" }
                                     message = "Refresh error: ${e.message}"

@@ -23,6 +23,7 @@ kotlin {
             implementation(project(":core"))
             implementation(project(":dao"))
             implementation(project(":localization"))
+            implementation(project(":downloader"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

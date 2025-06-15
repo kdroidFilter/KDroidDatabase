@@ -1,33 +1,66 @@
 package sample.app
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import co.touchlab.kermit.Logger
 import io.github.kdroidfilter.database.store.Database
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import sample.app.utils.isDatabaseExists
+import sample.app.utils.downloadDatabaseIfNotExists
 
 private lateinit var applicationContext: Context
+private val logger = Logger.withTag("SqlDriverFactory")
 
 fun initializeContext(context: Context) {
     applicationContext = context.applicationContext
 }
 
 actual fun createSqlDriver(): SqlDriver {
+    val language = getDeviceLanguage()
+    val dbName = "store-database-${language}.db"
+
+    // Check if database exists with content and download it if it doesn't or is empty
+    val dbPath = getDatabasePath()
+    val dbExists = isDatabaseExists(dbPath)
+    logger.i { "Database exists with content check: $dbExists for path: $dbPath" }
+
+    if (!dbExists) {
+        logger.i { "Attempting to download database for language: $language" }
+        // Use runBlocking but with withContext to move the network operation to IO dispatcher
+        runBlocking {
+            try {
+                val downloadSuccess = withContext(Dispatchers.IO) {
+                    downloadDatabaseIfNotExists(dbPath, language)
+                }
+                if (!downloadSuccess) {
+                    logger.e { "Failed to download database. Creating a new empty database." }
+                }
+            } catch (e: Exception) {
+                logger.e(e) { "❌ Failed to download store database for $language: ${e.message}" }
+            }
+        }
+    }
+
     val driver = AndroidSqliteDriver(
         schema = Database.Schema,
         context = applicationContext,
-        name = "store-database.db"
+        name = dbName
     )
     return driver
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
+
+
 actual fun getDatabasePath(): Path {
-    val databaseFile = applicationContext.getDatabasePath("store-database.db")
+    val language = getDeviceLanguage()
+    val databaseFile = applicationContext.getDatabasePath("store-database-${language}.db")
     return Paths.get(databaseFile.absolutePath)
 }
 
