@@ -1,6 +1,6 @@
 package io.github.kdroidfilter.database.dao
 
-import com.kdroid.gplayscrapper.core.model.GooglePlayApplicationInfo
+import io.github.kdroidfilter.androidappstorekit.gplay.core.model.GooglePlayApplicationInfo
 import io.github.kdroidfilter.database.store.Database
 import io.github.kdroidfilter.database.core.AppCategory
 import io.github.kdroidfilter.database.localization.LocalizedAppCategory

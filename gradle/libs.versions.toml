@@ -6,20 +6,20 @@ kotlin = "2.1.21"
 agp = "8.9.3"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.8.1"
-kermit = "2.0.5"
-koin = "4.0.4"
+kermit = "2.0.6"
+koin = "4.1.0"
 compose = "1.8.1"
 androidx-activityCompose = "1.10.1"
 mavenSlf4jProvider = "3.9.9"
 netfreetoolsCertificates = "1.0.1"
 sqliteJdbc = "3.49.1.0"
-platformtools = "0.3.4"
+platformtools = "0.4.0"
 ktor = "3.1.3"
 sqlDelight = "2.1.0"
 sqlJs = "1.8.0"
 webPackPlugin = "9.1.0"
-gplayscrapper = "0.3.2"
 kotlinxBrowserWasmJs = "0.3"
+androidAppstoreKit = "0.4.0"
 
 [libraries]
 
@@ -41,8 +41,8 @@ androidx-activityCompose = { module = "androidx.activity:activity-compose", vers
 maven-slf4j-provider = { module = "org.apache.maven:maven-slf4j-provider", version.ref = "mavenSlf4jProvider" }
 netfreetools-certificates = { module = "io.github.kdroidfilter:netfreetools.certificates", version.ref = "netfreetoolsCertificates" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
-gplay-scrapper = { module = "io.github.kdroidfilter:gplayscrapper ", version.ref = "gplayscrapper"}
-gplay-scrapper-core = { module = "io.github.kdroidfilter:gplayscrapper-core", version.ref = "gplayscrapper"}
+android-appstore-kit-gplay-scrapper = { module = "io.github.kdroidfilter.androidappstorekit.gplay:core", version.ref ="androidAppstoreKit"}
+android-appstore-kit-gplay-core = { module ="io.github.kdroidfilter.androidappstorekit.gplay:scrapper", version.ref = "androidAppstoreKit"}
 platform-tools-release-fetcher = {module = "io.github.kdroidfilter:platformtools.releasefetcher", version.ref = "platformtools"}
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 

@@ -30,8 +30,7 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(libs.kermit)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.gplay.scrapper.core)
-
+            implementation(libs.android.appstore.kit.gplay.scrapper)
             implementation(libs.ktor.client.core)
             implementation(libs.platform.tools.release.fetcher)
             implementation(libs.coil.compose)

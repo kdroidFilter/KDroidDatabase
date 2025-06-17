@@ -5,8 +5,8 @@
 ## 📑 Table of Contents
 - [Introduction](#introduction)
 - [Available Modes](#here-is-a-simple-tree-of-all-available-modes-)
-- [Directory Structure](#️-directory-structure)
-- [Supported Policy Types & Templates](#📐-supported-policy-types--templates)
+- [Directory Structure](#️-directory-structure-)
+- [Supported Policy Types & Templates](#-supported-policy-types--templates)
   - [FixedPolicy](#1️⃣-fixedpolicy)
   - [ModeBasedPolicy](#2️⃣-modebasedpolicy)
   - [MultiModePolicy](#3️⃣-multimodePolicy)
@@ -15,14 +15,14 @@
   - [Validating JSON Files](#validating-json-files)
 - [Questions & Answers](#❓-questions--answers)
   - [What is the difference between LOCAL_ONLY and OFFLINE?](#what-is-the-difference-between-local_only-and-offline)
-  - [Optional Flags: Content and Risk Warnings](#⚠️-optional-flags-content-and-risk-warnings)
+  - [Optional Flags: Content and Risk Warnings](#-optional-flags-content-and-risk-warnings)
   - [Why would an app require Play Store installation?](#why-would-an-app-require-play-store-installation)
-  - [Example: Risky Applications](#🔄-example-risky-applications)
+  - [Example: Risky Applications](#-example-risky-applications)
 - [Importing KDroid Database Modules](#importing-kdroid-database-modules)
-  - [Core Module](#core-module)
-  - [Localization Module](#localization-module)
-  - [Downloader Module](#downloader-module)
-  - [DAO Module](#dao-module)
+  - [Core Module](#core-module-)
+  - [Localization Module](#localization-module-)
+  - [Downloader Module](#downloader-module-)
+  - [DAO Module](#dao-module-)
 
 ## Introduction
 

@@ -1,6 +1,6 @@
 package io.github.kdroidfilter.database.dao
 
-import com.kdroid.gplayscrapper.core.model.GooglePlayApplicationInfo
+import io.github.kdroidfilter.androidappstorekit.gplay.core.model.GooglePlayApplicationInfo
 
 /**
  * Extended class to add additional information to the GooglePlayApplicationInfo model
