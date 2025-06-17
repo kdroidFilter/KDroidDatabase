@@ -132,4 +132,49 @@ object ApplicationsDao {
         }
     }
 
-}
+    /**
+     * Checks if an application is recommended in the store
+     * @param database The database instance
+     * @param appId The application ID (package name)
+     * @return true if the application is recommended in the store, false otherwise
+     */
+    fun isRecommendedInStore(
+        database: Database,
+        appId: String
+    ): Boolean {
+        val applicationsQueries = database.applicationsQueries
+        val application = applicationsQueries.getApplicationByAppId(appId).executeAsOneOrNull()
+
+        // Return true if is_recommended_in_store is 1, false otherwise
+        return application?.is_recommended_in_store == 1L
+    }
+
+    /**
+     * Gets all applications that are recommended in the store
+     * @param database The database instance
+     * @param deviceLanguage The device language for localized category names
+     * @param creator A function to create the return type from the application data
+     * @return A list of recommended applications
+     */
+    fun <T> getRecommendedApplications(
+        database: Database,
+        deviceLanguage: String,
+        creator: (Long, String, GooglePlayApplicationInfo) -> T
+    ): List<T> {
+        // Directly use the query objects provided by the database
+        val applicationsQueries = database.applicationsQueries
+        val developersQueries = database.developersQueries
+        val categoriesQueries = database.app_categoriesQueries
+
+        // Get all applications where is_recommended_in_store = 1
+        return applicationsQueries.getAllApplications().executeAsList()
+            .filter { it.is_recommended_in_store == 1L }
+            .map { app ->
+                val developer = developersQueries.getDeveloperById(app.developer_id).executeAsOne()
+                val category = categoriesQueries.getCategoryById(app.app_category_id).executeAsOne()
+
+                createAppInfoWithExtras(app, developer, category, deviceLanguage, creator)
+            }
+    }
+
+    }
