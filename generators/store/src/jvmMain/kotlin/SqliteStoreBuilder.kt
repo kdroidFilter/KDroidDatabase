@@ -3,9 +3,11 @@ import co.touchlab.kermit.Logger
 import com.kdroid.gplayscrapper.core.model.GooglePlayApplicationInfo
 import com.kdroid.gplayscrapper.services.getGooglePlayApplicationInfo
 import io.github.kdroidfilter.database.core.AppCategory
+import io.github.kdroidfilter.database.core.policies.AppPolicy
 import io.github.kdroidfilter.database.downloader.DatabaseDownloader
 import io.github.kdroidfilter.database.store.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.LocalDateTime
@@ -13,6 +15,12 @@ import java.time.format.DateTimeFormatter
 
 object SqliteStoreBuilder {
     private val logger = Logger.withTag("SqliteStoreBuilder")
+
+    // Extension function to convert Boolean to Long (1 for true, 0 for false)
+    private fun Boolean.toSqliteInt(): Long = if (this) 1L else 0L
+
+    // Extension function to convert nullable Boolean to Long (1 for true, 0 for false or null)
+    private fun Boolean?.toSqliteInt(): Long = if (this == true) 1L else 0L
 
     fun buildDatabase(
         appPoliciesDir: Path,
@@ -79,17 +87,47 @@ object SqliteStoreBuilder {
         logger.i { "✅ Inserted version info: $releaseName" }
     }
 
+    private val json = Json {
+        classDiscriminator = "type"
+        ignoreUnknownKeys = true
+    }
+
+    private fun loadPolicies(appPoliciesDir: Path): Map<String, AppPolicy> {
+        val policies = mutableMapOf<String, AppPolicy>()
+
+        Files.walk(appPoliciesDir)
+            .filter { Files.isRegularFile(it) && it.toString().endsWith(".json") }
+            .forEach { file ->
+                try {
+                    val content = Files.readString(file)
+                    val policy = json.decodeFromString(AppPolicy.serializer(), content)
+                    policies[policy.packageName] = policy
+                    logger.d { "Loaded policy for ${policy.packageName}: isRecommendedInStore=${policy.isRecommendedInStore}" }
+                } catch (e: Exception) {
+                    logger.w { "Failed to load policy from $file: ${e.message}" }
+                }
+            }
+
+        logger.i { "✅ Loaded ${policies.size} policies" }
+        return policies
+    }
+
     private fun upsertPackages(dir: Path, outputDbPath: Path, language: String = "en", country: String = "us") {
         // Get existing applications to avoid re-fetching
         val existingApps = mutableMapOf<String, GooglePlayApplicationInfo?>()
+
+        // Load app policies to get isRecommendedInStore values
+        val policies = loadPolicies(dir)
 
         var count = 0
         Files.walk(dir)
             .filter { Files.isRegularFile(it) && it.toString().endsWith(".json") }
             .forEach { file ->
-                val packageName = file.fileName.toString().substringBeforeLast(".")
-                val categoryName = file.parent.fileName.toString()
-                    .uppercase().replace('-', '_')
+                // Get policy for this file to extract packageName and category
+                val content = Files.readString(file)
+                val policy = json.decodeFromString(AppPolicy.serializer(), content)
+                val packageName = policy.packageName
+                val categoryName = policy.category.name
 
                 // Get or create the category
                 val appCategoriesQueries = App_categoriesQueries(createSqlDriver(outputDbPath))
@@ -118,7 +156,8 @@ object SqliteStoreBuilder {
                         packageName = packageName,
                         applicationsQueries = applicationsQueries,
                         developersQueries = developersQueries,
-                        categoryId = categoryId
+                        categoryId = categoryId,
+                        policies = policies
                     )
 
                     count++
@@ -151,10 +190,16 @@ object SqliteStoreBuilder {
         var processedCount = 0
         var addedCount = 0
 
+        // Load app policies to get isRecommendedInStore values
+        val policies = loadPolicies(dir)
+
         Files.walk(dir)
             .filter { Files.isRegularFile(it) && it.toString().endsWith(".json") }
             .forEach { file ->
-                val packageName = file.fileName.toString().substringBeforeLast(".")
+                // Get policy for this file to extract packageName and category
+                val content = Files.readString(file)
+                val policy = json.decodeFromString(AppPolicy.serializer(), content)
+                val packageName = policy.packageName
                 processedCount++
 
                 // Check if the package already exists in the database
@@ -165,8 +210,7 @@ object SqliteStoreBuilder {
 
                 // Only process if the package doesn't exist
                 if (existingApp == null) {
-                    val categoryName = file.parent.fileName.toString()
-                        .uppercase().replace('-', '_')
+                    val categoryName = policy.category.name
 
                     // Get or create the category
                     val appCategoriesQueries = App_categoriesQueries(createSqlDriver(outputDbPath))
@@ -191,7 +235,8 @@ object SqliteStoreBuilder {
                             packageName = packageName,
                             applicationsQueries = applicationsQueries,
                             developersQueries = developersQueries,
-                            categoryId = categoryId
+                            categoryId = categoryId,
+                            policies = policies
                         )
 
                         addedCount++
@@ -238,7 +283,8 @@ object SqliteStoreBuilder {
         packageName: String,
         applicationsQueries: ApplicationsQueries,
         developersQueries: DevelopersQueries,
-        categoryId: Long
+        categoryId: Long,
+        policies: Map<String, AppPolicy> = emptyMap()
     ): Long {
         // Get or create the developer
         val developer = developersQueries
@@ -276,13 +322,13 @@ object SqliteStoreBuilder {
                 reviews = appInfo.reviews,
                 histogram = appInfo.histogram.toString(),
                 price = appInfo.price,
-                free = if (appInfo.free) 1 else 0,
+                free = appInfo.free.toSqliteInt(),
                 currency = appInfo.currency,
-                sale = if (appInfo.sale) 1 else 0,
+                sale = appInfo.sale.toSqliteInt(),
                 sale_time = null,
                 original_price = appInfo.originalPrice,
                 sale_text = appInfo.saleText,
-                offers_iap = if (appInfo.offersIAP) 1 else 0,
+                offers_iap = appInfo.offersIAP.toSqliteInt(),
                 in_app_product_price = appInfo.inAppProductPrice,
                 developer_id = developer.id,
                 privacy_policy = appInfo.privacyPolicy,
@@ -295,9 +341,9 @@ object SqliteStoreBuilder {
                 video_image = appInfo.videoImage,
                 content_rating = appInfo.contentRating,
                 content_rating_description = appInfo.contentRatingDescription,
-                ad_supported = if (appInfo.adSupported) 1 else 0,
-                contains_ads = if (appInfo.containsAds) 1 else 0,
-                is_recommended_in_store = 0,
+                ad_supported = appInfo.adSupported.toSqliteInt(),
+                contains_ads = appInfo.containsAds.toSqliteInt(),
+                is_recommended_in_store = (policies[packageName]?.isRecommendedInStore ?: false).toSqliteInt(),
                 released = appInfo.released,
                 updated = appInfo.updated,
                 version = appInfo.version,

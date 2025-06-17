@@ -28,6 +28,6 @@ fun main(args: Array<String>) {
         } else {
             println("Building or updating databases (downloading existing ones if available)...")
         }
-        SqliteStoreBuilder.buildOrUpdateMultiLanguageDatabases(policiesDir, baseDbPath, forceFromScratch)
+        SqliteStoreBuilder.buildOrUpdateMultiLanguageDatabases(policiesDir, baseDbPath, true)
     }
 }
