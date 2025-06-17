@@ -423,6 +423,16 @@ dependencies {
 - **ApplicationsDao**: Provides methods for loading and searching applications in the database
 - **VersionDao**: Handles database version management operations
 - **AppInfoWithExtras**: A data class that extends the GooglePlayApplicationInfo model with additional information
+- **Data Consistency Verification**: Utilities to ensure alignment between JSON policy files and database records
+
+#### Features
+
+- **Data Consistency Verification**: Ensure perfect alignment between JSON policy files and database records
+  - Package name consistency validation
+  - Category mapping verification
+  - `isRecommendedInStore` flag synchronization
+- **Integration with Release Fetcher**: Seamless connection with the Downloader module for reliable database retrieval
+- **JUnit 5 Support**: Enhanced test framework with improved reporting and parallel test execution
 
 #### Usage Example
 
@@ -459,6 +469,12 @@ val currentVersion = VersionDao.getCurrentVersion(database)
 
 // Update the database version
 val updateSuccess = VersionDao.updateVersion(database, "NEWVERSION")
+
+// Verify data consistency with policy files
+val policies = PolicyRepository.loadAll(policiesDir)
+verifyPackageNameConsistency(applications, policies)
+verifyCategoryConsistency(applications, policies)
+verifyRecommendationConsistency(database, policies)
 ```
 
 #### Note on Sample Code
