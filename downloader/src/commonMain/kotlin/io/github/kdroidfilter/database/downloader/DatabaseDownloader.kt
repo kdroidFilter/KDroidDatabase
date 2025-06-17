@@ -4,7 +4,12 @@ import co.touchlab.kermit.Logger
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.net.HttpURLConnection
 import java.net.URI
+import java.net.URL
+import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * Class responsible for downloading KDroid database files from GitHub releases.
@@ -41,10 +46,10 @@ class DatabaseDownloader {
                     logger.i { "📥 Downloading $language store database from: $downloadUrl" }
 
                     // Download the file
-                    downloadFile(downloadUrl, outputDbFile.absolutePath)
+                    val downloadSuccess = downloadFile(downloadUrl, outputDbFile.absolutePath)
 
                     // Verify the file was downloaded successfully
-                    if (outputDbFile.exists() && outputDbFile.length() > 0) {
+                    if (downloadSuccess && outputDbFile.exists() && outputDbFile.length() > 0) {
                         logger.i {
                             "✅ Store database $language downloaded successfully to ${outputDbFile.absolutePath}"
                         }
@@ -100,10 +105,10 @@ class DatabaseDownloader {
                             logger.i { "📥 Downloading $lang store database from: $downloadUrl" }
 
                             // Download the file
-                            downloadFile(downloadUrl, outputDbFile.absolutePath)
+                            val downloadSuccess = downloadFile(downloadUrl, outputDbFile.absolutePath)
 
                             // Verify the file was downloaded successfully
-                            if (outputDbFile.exists() && outputDbFile.length() > 0) {
+                            if (downloadSuccess && outputDbFile.exists() && outputDbFile.length() > 0) {
                                 logger.i {
                                     "✅ Store database $lang downloaded successfully to ${outputDbFile.absolutePath}"
                                 }
@@ -161,10 +166,10 @@ class DatabaseDownloader {
                     logger.i { "📥 Downloading policies database from: $downloadUrl" }
 
                     // Download the file
-                    downloadFile(downloadUrl, outputDbFile.absolutePath)
+                    val downloadSuccess = downloadFile(downloadUrl, outputDbFile.absolutePath)
 
                     // Verify the file was downloaded successfully
-                    if (outputDbFile.exists() && outputDbFile.length() > 0) {
+                    if (downloadSuccess && outputDbFile.exists() && outputDbFile.length() > 0) {
                         logger.i { "✅ Policies database downloaded successfully to ${outputDbFile.absolutePath}" }
                         return true
                     } else {
@@ -186,22 +191,94 @@ class DatabaseDownloader {
     }
 
     /**
-     * Downloads a file from a URL to a local file path.
+     * Downloads a file from a URL to a local file path with HTTP status verification and retry mechanism.
      * @param url The URL to download from
      * @param outputPath The local file path to save the downloaded file
+     * @param maxRetries Maximum number of retry attempts (default: 3)
+     * @param initialBackoffMs Initial backoff time in milliseconds (default: 1000)
+     * @return Boolean indicating whether the download was successful
      */
-    private fun downloadFile(url: String, outputPath: String) {
+    private fun downloadFile(
+        url: String, 
+        outputPath: String, 
+        maxRetries: Int = 3, 
+        initialBackoffMs: Long = 1000
+    ): Boolean {
         val outputFile = File(outputPath)
 
         // Create parent directories if they don't exist
         outputFile.parentFile?.mkdirs()
 
-        // Download the file
-        URI(url).toURL().openStream().use { input ->
-            FileOutputStream(outputFile).use { output ->
-                input.copyTo(output)
+        var attempt = 0
+        var lastException: Exception? = null
+
+        while (attempt <= maxRetries) {
+            try {
+                if (attempt > 0) {
+                    // Calculate backoff time with exponential increase and some randomization
+                    val backoffMs = (initialBackoffMs * 2.0.pow(attempt - 1)).toLong()
+                    val jitteredBackoff = backoffMs + (backoffMs * Math.random() * 0.1).toLong()
+                    val cappedBackoff = min(jitteredBackoff, 30_000) // Cap at 30 seconds
+
+                    logger.d { "⏱️ Retry attempt $attempt after ${cappedBackoff}ms delay" }
+                    Thread.sleep(cappedBackoff)
+                }
+
+                // Use HttpURLConnection for better HTTP handling
+                val connection = URL(url).openConnection() as HttpURLConnection
+                connection.connectTimeout = 30000 // 30 seconds
+                connection.readTimeout = 30000 // 30 seconds
+
+                try {
+                    val responseCode = connection.responseCode
+
+                    if (responseCode in 200..299) {
+                        // Success - download the file
+                        connection.inputStream.use { input ->
+                            FileOutputStream(outputFile).use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+
+                        // If we get here, download was successful
+                        if (attempt > 0) {
+                            logger.i { "✅ Download succeeded after $attempt ${if (attempt == 1) "retry" else "retries"}" }
+                        }
+                        return true
+                    } else {
+                        // HTTP error
+                        val errorMessage = "HTTP error: $responseCode ${connection.responseMessage}"
+                        logger.w { "⚠️ $errorMessage (attempt ${attempt + 1}/$maxRetries)" }
+
+                        // For certain status codes, retrying won't help
+                        if (responseCode in listOf(400, 401, 403, 404)) {
+                            logger.e { "❌ $errorMessage - permanent error, not retrying" }
+                            return false
+                        }
+
+                        lastException = IOException(errorMessage)
+                    }
+                } finally {
+                    connection.disconnect()
+                }
+            } catch (e: Exception) {
+                lastException = e
+                logger.w(e) { "⚠️ Download attempt ${attempt + 1}/$maxRetries failed: ${e.message}" }
+
+                // Don't retry for certain exceptions where retry won't help
+                if (e is SecurityException || e is IllegalArgumentException) {
+                    logger.e(e) { "❌ Fatal error, not retrying: ${e.message}" }
+                    return false
+                }
             }
+
+            attempt++
         }
+
+        // If we get here, all retries failed
+        val errorMessage = "Failed to download file after $maxRetries retries"
+        logger.e(lastException) { "❌ $errorMessage" }
+        return false
     }
 
 }
