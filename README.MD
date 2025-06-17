@@ -420,7 +420,7 @@ dependencies {
 
 #### Key Components
 
-- **ApplicationsDao**: Provides methods for loading and searching applications in the database
+- **ApplicationsDao**: Provides methods for loading and searching applications in the database, as well as checking and retrieving recommended applications
 - **VersionDao**: Handles database version management operations
 - **AppInfoWithExtras**: A data class that extends the GooglePlayApplicationInfo model with additional information
 - **Data Consistency Verification**: Utilities to ensure alignment between JSON policy files and database records
@@ -464,17 +464,31 @@ val searchResults = ApplicationsDao.searchApplicationsInDatabase(
     }
 )
 
+// Check if an application is recommended in the store
+val isRecommended = ApplicationsDao.isRecommendedInStore(
+    database = database,
+    appId = "com.example.app"
+)
+
+// Get all applications that are recommended in the store
+val recommendedApps = ApplicationsDao.getRecommendedApplications(
+    database = database,
+    deviceLanguage = "en",
+    creator = { id, categoryLocalizedName, appInfo ->
+        AppInfoWithExtras(
+            id = id,
+            categoryLocalizedName = categoryLocalizedName,
+            app = appInfo
+        )
+    }
+)
+
 // Get the current database version
 val currentVersion = VersionDao.getCurrentVersion(database)
 
 // Update the database version
 val updateSuccess = VersionDao.updateVersion(database, "NEWVERSION")
 
-// Verify data consistency with policy files
-val policies = PolicyRepository.loadAll(policiesDir)
-verifyPackageNameConsistency(applications, policies)
-verifyCategoryConsistency(applications, policies)
-verifyRecommendationConsistency(database, policies)
 ```
 
 #### Note on Sample Code
