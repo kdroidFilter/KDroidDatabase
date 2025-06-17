@@ -19,6 +19,14 @@ kotlin {
     androidTarget { publishLibraryVariants("release") }
     jvm()
 
+    // Configure JVM test task
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
 
     sourceSets {
 
@@ -36,7 +44,14 @@ kotlin {
         jvmTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
-
+            implementation(project(":downloader"))
+            implementation(project(":generators:policies"))
+            implementation(libs.sqldelight.sqlite.driver)
+            implementation(libs.sqlite.jdbc)
+            // JUnit Jupiter dependencies
+            implementation(libs.junit.jupiter.api)
+            implementation(libs.junit.jupiter.engine)
+            implementation(libs.junit.jupiter.params)
         }
 
         commonMain.dependencies {

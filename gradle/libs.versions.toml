@@ -1,6 +1,7 @@
 [versions]
 
 coilNetworkOkhttp = "3.2.0"
+junitJupiterApi = "5.10.1"
 kotlin = "2.1.21"
 agp = "8.9.3"
 kotlinx-coroutines = "1.10.2"
@@ -25,6 +26,9 @@ kotlinxBrowserWasmJs = "0.3"
 androidcontextprovider = { module = "io.github.kdroidfilter:androidcontextprovider", version.ref = "netfreetoolsCertificates" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilNetworkOkhttp" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiterApi" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitJupiterApi" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiterApi" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
