@@ -76,7 +76,7 @@ fun SearchScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(searchResults) { app ->
-                    AppRow(app) { onAppClick(app) }
+                    AppRow(app, database) { onAppClick(app) }
                     HorizontalDivider()
                 }
             }

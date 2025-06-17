@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -57,7 +58,8 @@ expect fun getDeviceLanguage(): String
 
 enum class Screen {
     Home,
-    Search
+    Search,
+    Recommended
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +81,10 @@ fun App() {
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<AppInfoWithExtras>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
+
+    // Recommended apps state
+    var recommendedApps by remember { mutableStateOf<List<AppInfoWithExtras>>(emptyList()) }
+    var isLoadingRecommended by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         try {
@@ -215,6 +221,12 @@ fun App() {
                     onClick = { currentScreen = Screen.Home }
                 )
                 NavigationBarItem(
+                    icon = { Icon(Icons.Default.Star, contentDescription = "Recommended") },
+                    label = { Text("Recommended") },
+                    selected = currentScreen == Screen.Recommended,
+                    onClick = { currentScreen = Screen.Recommended }
+                )
+                NavigationBarItem(
                     icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
                     label = { Text("Search") },
                     selected = currentScreen == Screen.Search,
@@ -240,7 +252,7 @@ fun App() {
                             modifier = Modifier.fillMaxSize()
                         ) {
                             items(applications) { app ->
-                                AppRow(app) { selectedAppDetails = app }
+                                AppRow(app, database) { selectedAppDetails = app }
                                 HorizontalDivider()
                             }
                         }
@@ -285,6 +297,50 @@ fun App() {
                             isSearching = isSearching,
                             onAppClick = { app -> selectedAppDetails = app }
                         )
+                    }
+                    Screen.Recommended -> {
+                        // Load recommended apps when this screen is first shown
+                        LaunchedEffect(Unit) {
+                            if (recommendedApps.isEmpty() && !isLoadingRecommended) {
+                                isLoadingRecommended = true
+                                try {
+                                    withContext(Dispatchers.IO) {
+                                        val apps = ApplicationsDao.getRecommendedApplications(
+                                            database = database,
+                                            deviceLanguage = getDeviceLanguage(),
+                                            creator = { id, categoryLocalizedName, appInfo ->
+                                                AppInfoWithExtras(
+                                                    id = id,
+                                                    categoryLocalizedName = categoryLocalizedName,
+                                                    app = appInfo
+                                                )
+                                            }
+                                        )
+                                        recommendedApps = apps
+                                    }
+                                } catch (e: Exception) {
+                                    logger.e { "Loading recommended apps error: ${e.message}" }
+                                    message = "Error loading recommended apps: ${e.message}"
+                                } finally {
+                                    isLoadingRecommended = false
+                                }
+                            }
+                        }
+
+                        if (isLoadingRecommended) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(recommendedApps) { app ->
+                                    AppRow(app, database) { selectedAppDetails = app }
+                                    HorizontalDivider()
+                                }
+                            }
+                        }
                     }
                 }
             }

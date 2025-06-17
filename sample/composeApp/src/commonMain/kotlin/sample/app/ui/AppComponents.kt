@@ -13,24 +13,36 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.cash.sqldelight.db.SqlDriver
 import coil3.compose.AsyncImage
 import io.github.kdroidfilter.database.dao.AppInfoWithExtras
+import io.github.kdroidfilter.database.dao.ApplicationsDao
+import io.github.kdroidfilter.database.store.Database
 import sample.app.utils.createImageRequest
 
 @Composable
-fun AppRow(appWithExtras: AppInfoWithExtras, onClick: () -> Unit) {
+fun AppRow(appWithExtras: AppInfoWithExtras, database: Database? = null, onClick: () -> Unit) {
     val app = appWithExtras.app
+    val isRecommended = remember(app.appId, database) {
+        database?.let { ApplicationsDao.isRecommendedInStore(it, app.appId) } ?: false
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,12 +58,23 @@ fun AppRow(appWithExtras: AppInfoWithExtras, onClick: () -> Unit) {
                 .clip(MaterialTheme.shapes.small)
         )
         Spacer(modifier = Modifier.width(12.dp))
-        Column {
-            Text(
-                text = app.title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = 16.sp
-            )
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = app.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                if (isRecommended) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Recommended app",
+                        tint = Color(0xFFFFD700), // Gold color
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "${app.score} ★ (${app.ratings} ratings)",
