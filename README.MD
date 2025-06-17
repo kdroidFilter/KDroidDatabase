@@ -2,6 +2,30 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter.database/core)](https://search.maven.org/artifact/io.github.kdroidfilter.database/core)
 
+## 📑 Table of Contents
+- [Introduction](#introduction)
+- [Available Modes](#here-is-a-simple-tree-of-all-available-modes)
+- [Directory Structure](#-directory-structure)
+- [Supported Policy Types & Templates](#-supported-policy-types--templates)
+  - [FixedPolicy](#-fixedpolicy)
+  - [ModeBasedPolicy](#-modebasedpolicy)
+  - [MultiModePolicy](#-multimodePolicy)
+- [Checklist Before Submitting](#-checklist-before-submitting)
+- [Gradle Tasks](#-gradle-tasks)
+  - [Validating JSON Files](#validating-json-files)
+- [Questions & Answers](#-questions--answers)
+  - [What is the difference between LOCAL_ONLY and OFFLINE?](#what-is-the-difference-between-local_only-and-offline)
+  - [Optional Flags: Content and Risk Warnings](#-optional-flags-content-and-risk-warnings)
+  - [Why would an app require Play Store installation?](#why-would-an-app-require-play-store-installation)
+  - [Example: Risky Applications](#-example-risky-applications)
+- [Importing KDroid Database Modules](#importing-kdroid-database-modules)
+  - [Core Module](#core-module)
+  - [Localization Module](#localization-module)
+  - [Downloader Module](#downloader-module)
+  - [DAO Module](#dao-module)
+
+## Introduction
+
 Welcome to the community-driven database of kosher filtering rules for applications. This guide is primarily used by KDroid Filter but is freely available for anyone to use. Licensed under the LGPL, you may integrate these policies even in closed-source applications. At this stage, it is recommended to contribute only host-based rules, as the tools for detecting apps and UI nodes are not yet available.
 
 The KDroid app store dynamically adapts its application listings based on the current **UserMode** (levels 0 to 5) to only show apps that are appropriate for each level:
