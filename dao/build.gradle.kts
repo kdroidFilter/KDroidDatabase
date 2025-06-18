@@ -57,7 +57,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":core"))
             implementation(project(":localization"))
-            api(libs.android.appstore.kit.gplay.scrapper)
+            api(libs.storekit.gplayscrapper)
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)

@@ -22,7 +22,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kermit)
-            implementation(libs.android.appstore.kit.gplay.core)
+            implementation(libs.storekit.gplaycore)
             implementation(libs.platform.tools.release.fetcher)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sqlite.jdbc)

@@ -8,7 +8,7 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.8.1"
 kermit = "2.0.6"
 koin = "4.1.0"
-compose = "1.8.1"
+compose = "1.8.2"
 androidx-activityCompose = "1.10.1"
 mavenSlf4jProvider = "3.9.9"
 netfreetoolsCertificates = "1.0.1"
@@ -19,7 +19,7 @@ sqlDelight = "2.1.0"
 sqlJs = "1.8.0"
 webPackPlugin = "9.1.0"
 kotlinxBrowserWasmJs = "0.3"
-androidAppstoreKit = "0.4.0"
+storekit = "0.4.1"
 
 [libraries]
 
@@ -38,11 +38,15 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
 maven-slf4j-provider = { module = "org.apache.maven:maven-slf4j-provider", version.ref = "mavenSlf4jProvider" }
 netfreetools-certificates = { module = "io.github.kdroidfilter:netfreetools.certificates", version.ref = "netfreetoolsCertificates" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
-android-appstore-kit-gplay-scrapper = { module = "io.github.kdroidfilter.androidappstorekit.gplay:core", version.ref ="androidAppstoreKit"}
-android-appstore-kit-gplay-core = { module ="io.github.kdroidfilter.androidappstorekit.gplay:scrapper", version.ref = "androidAppstoreKit"}
+storekit-gplayscrapper = { module = "io.github.kdroidfilter:storekit-gplay-scrapper", version.ref = "storekit" }
+storekit-gplaycore = { module ="io.github.kdroidfilter:storekit-gplay-core", version.ref = "storekit" }
 platform-tools-release-fetcher = {module = "io.github.kdroidfilter:platformtools.releasefetcher", version.ref = "platformtools"}
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 
