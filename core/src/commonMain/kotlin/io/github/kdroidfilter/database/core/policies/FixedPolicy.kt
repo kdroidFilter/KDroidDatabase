@@ -18,5 +18,6 @@ data class FixedPolicy(
     override val hasUnmodestImage: Boolean = false,
     override val isPotentiallyDangerous: Boolean = false,
     override val isRecommendedInStore: Boolean = false,
+    override val sha1: String = "",
     override val detectionRules: List<DetectionRule> = emptyList()
 ) : AppPolicy

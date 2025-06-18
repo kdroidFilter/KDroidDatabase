@@ -19,7 +19,7 @@ sqlDelight = "2.1.0"
 sqlJs = "1.8.0"
 webPackPlugin = "9.1.0"
 kotlinxBrowserWasmJs = "0.3"
-storekit = "0.4.1"
+storekit = "0.4.2"
 
 [libraries]
 
@@ -45,6 +45,7 @@ ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", vers
 maven-slf4j-provider = { module = "org.apache.maven:maven-slf4j-provider", version.ref = "mavenSlf4jProvider" }
 netfreetools-certificates = { module = "io.github.kdroidfilter:netfreetools.certificates", version.ref = "netfreetoolsCertificates" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
+storekit-aptoide-api = { module = "io.github.kdroidfilter:storekit-aptoide-api", version.ref = "storekit" }
 storekit-gplayscrapper = { module = "io.github.kdroidfilter:storekit-gplay-scrapper", version.ref = "storekit" }
 storekit-gplaycore = { module ="io.github.kdroidfilter:storekit-gplay-core", version.ref = "storekit" }
 platform-tools-release-fetcher = {module = "io.github.kdroidfilter:platformtools.releasefetcher", version.ref = "platformtools"}

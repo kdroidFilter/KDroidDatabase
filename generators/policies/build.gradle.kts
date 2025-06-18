@@ -11,20 +11,27 @@ kotlin {
 
 
     sourceSets {
-        jvmMain.dependencies {
+        jvmTest.dependencies {
             implementation(kotlin("test"))
         }
 
         jvmMain.dependencies {
             implementation(project(":core"))
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kermit)
             implementation(libs.platform.tools.release.fetcher)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sqlite.jdbc)
             implementation(libs.maven.slf4j.provider)
+            implementation(libs.storekit.aptoide.api)
+
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.serialization)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.client.cio)
+
         }
 
     }
