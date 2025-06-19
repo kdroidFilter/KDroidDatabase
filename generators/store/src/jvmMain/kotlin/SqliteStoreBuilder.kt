@@ -1,11 +1,12 @@
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import co.touchlab.kermit.Logger
-import com.kdroid.gplayscrapper.core.model.GooglePlayApplicationInfo
-import com.kdroid.gplayscrapper.services.getGooglePlayApplicationInfo
+import io.github.kdroidfilter.androidappstorekit.gplay.scrapper.services.getGooglePlayApplicationInfo
+
 import io.github.kdroidfilter.database.core.AppCategory
 import io.github.kdroidfilter.database.core.policies.AppPolicy
 import io.github.kdroidfilter.database.downloader.DatabaseDownloader
 import io.github.kdroidfilter.database.store.*
+import io.github.kdroidfilter.storekit.gplay.core.model.GooglePlayApplicationInfo
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.nio.file.Files
