@@ -1,4 +1,5 @@
 import co.touchlab.kermit.Logger
+import io.github.kdroidfilter.database.core.AppCategory
 import io.github.kdroidfilter.database.core.policies.AppPolicy
 import io.github.kdroidfilter.database.core.policies.FixedPolicy
 import io.github.kdroidfilter.database.core.policies.ModeBasedPolicy
@@ -53,19 +54,23 @@ object SqlitePolicyBuilder {
     }
 
     private fun createTables(conn: Connection) = with(conn.createStatement()) {
-        executeUpdate("""
+        executeUpdate(
+            """
             CREATE TABLE IF NOT EXISTS policies (
               package_name TEXT PRIMARY KEY,
               data         TEXT NOT NULL
             )
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        executeUpdate("""
+        executeUpdate(
+            """
             CREATE TABLE IF NOT EXISTS version (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               release_name TEXT NOT NULL
             )
-        """.trimIndent())
+        """.trimIndent()
+        )
         close()
     }
 
@@ -91,71 +96,96 @@ object SqlitePolicyBuilder {
 
         val aptoideService = AptoideService()
         val failedApps = mutableListOf<String>()
+        var insertedCount = 0
+
         conn.prepareStatement(insertSql).use { ps ->
             val policies = PolicyRepository.loadAll(policiesDir)
             policies.forEach { policy ->
                 runBlocking {
-                    // Try to get the app signature, but use an empty string if it fails
-                    val appSignature = try {
-                        aptoideService.getAppMetaByPackageName(policy.packageName)
-                            .file.signature.toFormattedSha1()
-                    } catch (e: Exception) {
-                        logger.w { "Failed to get signature for ${policy.packageName}: ${e.message}" }
-                        failedApps.add(policy.packageName)
-                        ""
+                    // If we need to fetch data from API (empty SHA1 or version code is 0)
+                    var appSignature = policy.sha1
+                    var appMinVersionCode = policy.minimumVersionCode
+
+                    // Only make API call if we need either signature or version code
+                    if (appSignature.isEmpty() || appMinVersionCode == 0) {
+                        try {
+                            // Make a single API call and store the result
+                            val appMeta = aptoideService.getAppMetaByPackageName(policy.packageName)
+
+                            // Update signature if needed
+                            if (appSignature.isEmpty()) {
+                                appSignature = appMeta.file.signature.toFormattedSha1()
+                            }
+
+                            // Update version code if needed
+                            if (appMinVersionCode == 0) {
+                                appMinVersionCode = appMeta.file.vercode
+                            }
+                        } catch (e: Exception) {
+                            logger.w { "Failed to get app metadata for ${policy.packageName}: ${e.message}" }
+                            if (appSignature.isEmpty()) {
+                                failedApps.add(policy.packageName)
+                            }
+                        }
                     }
-                    // Create a new policy with the updated sha1 value
-                    val policyWithSignature = when (policy) {
-                        is FixedPolicy -> FixedPolicy(
-                            packageName = policy.packageName,
-                            category = policy.category,
-                            networkPolicy = policy.networkPolicy,
-                            minimumVersionCode = policy.minimumVersionCode,
-                            requiresPlayStoreInstallation = policy.requiresPlayStoreInstallation,
-                            hasUnmodestImage = policy.hasUnmodestImage,
-                            isPotentiallyDangerous = policy.isPotentiallyDangerous,
-                            isRecommendedInStore = policy.isRecommendedInStore,
-                            sha1 = appSignature,
-                            detectionRules = policy.detectionRules
-                        )
-                        is ModeBasedPolicy -> ModeBasedPolicy(
-                            packageName = policy.packageName,
-                            category = policy.category,
-                            modePolicies = policy.modePolicies,
-                            minimumVersionCode = policy.minimumVersionCode,
-                            requiresPlayStoreInstallation = policy.requiresPlayStoreInstallation,
-                            hasUnmodestImage = policy.hasUnmodestImage,
-                            isPotentiallyDangerous = policy.isPotentiallyDangerous,
-                            isRecommendedInStore = policy.isRecommendedInStore,
-                            sha1 = appSignature,
-                            detectionRules = policy.detectionRules
-                        )
-                        is MultiModePolicy -> MultiModePolicy(
-                            packageName = policy.packageName,
-                            category = policy.category,
-                            modeVariants = policy.modeVariants,
-                            minimumVersionCode = policy.minimumVersionCode,
-                            requiresPlayStoreInstallation = policy.requiresPlayStoreInstallation,
-                            hasUnmodestImage = policy.hasUnmodestImage,
-                            isPotentiallyDangerous = policy.isPotentiallyDangerous,
-                            isRecommendedInStore = policy.isRecommendedInStore,
-                            sha1 = appSignature,
-                            detectionRules = policy.detectionRules
-                        )
-                        else -> throw IllegalArgumentException("Unknown policy type: ${policy::class.simpleName}")
+
+                    // Only add to the database if the signature is not empty, if it's a system app, or if it has a valid minimumVersionCode (for tests)
+                    if (appSignature.isNotEmpty() || policy.category == AppCategory.SYSTEM || policy.minimumVersionCode > 0) {
+                        // Create a new policy with the updated sha1 value
+                        val policyWithSignature = when (policy) {
+                            is FixedPolicy -> FixedPolicy(
+                                packageName = policy.packageName,
+                                category = policy.category,
+                                networkPolicy = policy.networkPolicy,
+                                minimumVersionCode = appMinVersionCode,
+                                requiresPlayStoreInstallation = policy.requiresPlayStoreInstallation,
+                                hasUnmodestImage = policy.hasUnmodestImage,
+                                isPotentiallyDangerous = policy.isPotentiallyDangerous,
+                                isRecommendedInStore = policy.isRecommendedInStore,
+                                sha1 = appSignature,
+                                detectionRules = policy.detectionRules
+                            )
+
+                            is ModeBasedPolicy -> ModeBasedPolicy(
+                                packageName = policy.packageName,
+                                category = policy.category,
+                                modePolicies = policy.modePolicies,
+                                minimumVersionCode = appMinVersionCode,
+                                requiresPlayStoreInstallation = policy.requiresPlayStoreInstallation,
+                                hasUnmodestImage = policy.hasUnmodestImage,
+                                isPotentiallyDangerous = policy.isPotentiallyDangerous,
+                                isRecommendedInStore = policy.isRecommendedInStore,
+                                sha1 = appSignature,
+                                detectionRules = policy.detectionRules
+                            )
+
+                            is MultiModePolicy -> MultiModePolicy(
+                                packageName = policy.packageName,
+                                category = policy.category,
+                                modeVariants = policy.modeVariants,
+                                minimumVersionCode = appMinVersionCode,
+                                requiresPlayStoreInstallation = policy.requiresPlayStoreInstallation,
+                                hasUnmodestImage = policy.hasUnmodestImage,
+                                isPotentiallyDangerous = policy.isPotentiallyDangerous,
+                                isRecommendedInStore = policy.isRecommendedInStore,
+                                sha1 = appSignature,
+                                detectionRules = policy.detectionRules
+                            )
+                        }
+                        val jsonStr = json.encodeToString(AppPolicy.serializer(), policyWithSignature)
+                        ps.setString(1, policy.packageName)
+                        ps.setString(2, jsonStr)
+                        ps.addBatch()
+                        insertedCount++
                     }
-                    val jsonStr = json.encodeToString(AppPolicy.serializer(), policyWithSignature)
-                    ps.setString(1, policy.packageName)
-                    ps.setString(2, jsonStr)
-                    ps.addBatch()
                 }
             }
             ps.executeBatch()
-            logger.i { "✅ Inserted ${policies.size} policies" }
+            logger.i { "✅ Inserted $insertedCount policies (out of ${policies.size} total)" }
 
             // Log summary of apps with failed signature retrieval
             if (failedApps.isNotEmpty()) {
-                logger.w { "⚠️ Failed to get signatures for ${failedApps.size} apps:" }
+                logger.w { "⚠️ Skipped ${failedApps.size} apps without signatures:" }
                 failedApps.forEach { packageName ->
                     logger.w { "  - $packageName" }
                 }
