@@ -71,3 +71,15 @@ tasks.register<JavaExec>("validateJson") {
     )
     mainClass.set("JsonValidatorKt")
 }
+
+tasks.register<JavaExec>("checkPolicies") {
+    group = "validation"
+    description = "Checks policies for missing version codes and signatures"
+
+    dependsOn(kotlin.jvm().compilations["main"].compileTaskProvider)
+    classpath = files(
+        kotlin.jvm().compilations["main"].output.allOutputs,
+        kotlin.jvm().compilations["main"].runtimeDependencyFiles
+    )
+    mainClass.set("PolicyCheckerKt")
+}
