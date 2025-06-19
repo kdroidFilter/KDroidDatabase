@@ -28,6 +28,12 @@ kotlin {
             implementation(libs.sqlite.jdbc)
             implementation(libs.maven.slf4j.provider)
             implementation(libs.sqldelight.sqlite.driver)
+
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.serialization)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.client.cio)
         }
 
 
