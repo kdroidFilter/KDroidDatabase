@@ -2,8 +2,9 @@
   "type": "Fixed",
   "packageName": "com.mendelg.otzaria",
   "category": "TORAH",
-  "minimumVersionCode": 0,
+  "minimumVersionCode": 44389637,
   "networkPolicy": {
     "mode": "FULL_OPEN"
-  }
+  },
+  "sha1" : "bb4acfb8a076d09c22ddee39bf4633d956edf369"
 }

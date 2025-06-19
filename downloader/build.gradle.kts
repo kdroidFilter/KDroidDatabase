@@ -38,7 +38,8 @@ kotlin {
 
         commonMain.dependencies {
             api(project(":core"))
-            api(libs.gplay.scrapper)
+            api("io.github.kdroidfilter.androidappstorekit.gplay:scrapper:0.4.0")
+
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kermit)
             implementation(libs.platform.tools.release.fetcher)

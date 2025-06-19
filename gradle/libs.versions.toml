@@ -1,31 +1,31 @@
 [versions]
 
-coilNetworkOkhttp = "3.2.0"
+coil = "3.2.0"
 junitJupiterApi = "5.10.1"
 kotlin = "2.1.21"
 agp = "8.9.3"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.8.1"
-kermit = "2.0.5"
-koin = "4.0.4"
-compose = "1.8.1"
+kermit = "2.0.6"
+koin = "4.1.0"
+compose = "1.8.2"
 androidx-activityCompose = "1.10.1"
-mavenSlf4jProvider = "3.9.9"
+slf4j = "3.9.9"
 netfreetoolsCertificates = "1.0.1"
 sqliteJdbc = "3.49.1.0"
-platformtools = "0.3.4"
+platformtools = "0.4.0"
 ktor = "3.1.3"
 sqlDelight = "2.1.0"
 sqlJs = "1.8.0"
 webPackPlugin = "9.1.0"
-gplayscrapper = "0.3.2"
 kotlinxBrowserWasmJs = "0.3"
+storekit = "0.6.0"
 
 [libraries]
 
 androidcontextprovider = { module = "io.github.kdroidfilter:androidcontextprovider", version.ref = "netfreetoolsCertificates" }
-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilNetworkOkhttp" }
-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiterApi" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitJupiterApi" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiterApi" }
@@ -38,11 +38,16 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-maven-slf4j-provider = { module = "org.apache.maven:maven-slf4j-provider", version.ref = "mavenSlf4jProvider" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
+maven-slf4j-provider = { module = "org.apache.maven:maven-slf4j-provider", version.ref = "slf4j" }
 netfreetools-certificates = { module = "io.github.kdroidfilter:netfreetools.certificates", version.ref = "netfreetoolsCertificates" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
-gplay-scrapper = { module = "io.github.kdroidfilter:gplayscrapper ", version.ref = "gplayscrapper"}
-gplay-scrapper-core = { module = "io.github.kdroidfilter:gplayscrapper-core", version.ref = "gplayscrapper"}
+storekit-aptoide-api = { module = "io.github.kdroidfilter:storekit-aptoide-api", version.ref = "storekit" }
+storekit-gplayscrapper = { module = "io.github.kdroidfilter:storekit-gplay-scrapper", version.ref = "storekit" }
+storekit-gplaycore = { module ="io.github.kdroidfilter:storekit-gplay-core", version.ref = "storekit" }
 platform-tools-release-fetcher = {module = "io.github.kdroidfilter:platformtools.releasefetcher", version.ref = "platformtools"}
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 

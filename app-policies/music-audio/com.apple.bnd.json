@@ -2,9 +2,10 @@
   "type": "Fixed",
   "packageName": "com.apple.bnd",
   "category": "MUSIC_AUDIO",
-  "minimumVersionCode": 0,
+  "minimumVersionCode": 25500,
   "hasUnmodestImage": true,
   "networkPolicy": {
     "mode": "FULL_OPEN"
-  }
+  },
+  "sha1" : "33e7ba4c0f1cab0831c32fab77d3d23e24505f61"
 }

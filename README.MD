@@ -5,8 +5,8 @@
 ## 📑 Table of Contents
 - [Introduction](#introduction)
 - [Available Modes](#here-is-a-simple-tree-of-all-available-modes-)
-- [Directory Structure](#️-directory-structure)
-- [Supported Policy Types & Templates](#📐-supported-policy-types--templates)
+- [Directory Structure](#️-directory-structure-)
+- [Supported Policy Types & Templates](#-supported-policy-types--templates)
   - [FixedPolicy](#1️⃣-fixedpolicy)
   - [ModeBasedPolicy](#2️⃣-modebasedpolicy)
   - [MultiModePolicy](#3️⃣-multimodePolicy)
@@ -15,14 +15,14 @@
   - [Validating JSON Files](#validating-json-files)
 - [Questions & Answers](#❓-questions--answers)
   - [What is the difference between LOCAL_ONLY and OFFLINE?](#what-is-the-difference-between-local_only-and-offline)
-  - [Optional Flags: Content and Risk Warnings](#⚠️-optional-flags-content-and-risk-warnings)
+  - [Optional Flags: Content and Risk Warnings](#-optional-flags-content-and-risk-warnings)
   - [Why would an app require Play Store installation?](#why-would-an-app-require-play-store-installation)
-  - [Example: Risky Applications](#🔄-example-risky-applications)
+  - [Example: Risky Applications](#-example-risky-applications)
 - [Importing KDroid Database Modules](#importing-kdroid-database-modules)
-  - [Core Module](#core-module)
-  - [Localization Module](#localization-module)
-  - [Downloader Module](#downloader-module)
-  - [DAO Module](#dao-module)
+  - [Core Module](#core-module-)
+  - [Localization Module](#localization-module-)
+  - [Downloader Module](#downloader-module-)
+  - [DAO Module](#dao-module-)
 
 ## Introduction
 
@@ -236,8 +236,14 @@ Use when each user mode has multiple variants, each with its own rules and optio
 
 1. 🔎 **Validate JSON** with a linter (e.g., [jsonlint.com](https://jsonlint.com/)) or use the project's built-in validation task (see below).
 2. 📂 **Place** your file under the correct category folder.
-3. 📜 **Commit only** the JSON file—no code or docs changes.
-4. 📝 **PR title** should clearly state the app package.
+3. 🔢 **Include a minimum version code** (`minimumVersionCode`) for each app. This is imperative for proper app validation. While our system can try to determine this automatically, it's not 100% reliable and will always use the latest version available.
+4. 🔐 **Include the SHA1 signature** (`sha1`) of the app's certificate. This is crucial for security verification. Our system can attempt to retrieve this, but it's not always reliable.
+5. 📜 **Commit only** the JSON file—no code or docs changes.
+6. 📝 **PR title** should clearly state the app package.
+
+> **Note**: For system apps (category `SYSTEM`), the minimum version code and SHA1 signature are not required.
+> 
+> **Important**: If our system cannot determine the minimum version code or signature for a non-system app, the CI will fail. Make sure these values are either provided in the policy file or can be reliably retrieved from the Aptoide API.
 
 CI will reject invalid JSON or misplaced files. Good luck! 🙌
 
@@ -261,6 +267,22 @@ This task checks all JSON files in the `app-policies` directory to ensure they:
 - Can be properly parsed by the application
 
 The task will report any validation errors found, making it easier to identify and fix issues before submitting.
+
+### Checking Policies
+
+To check policies for missing version codes and signatures:
+
+```bash
+./gradlew :generators:policies:checkPolicies
+```
+
+This task verifies that all policy files have:
+- A valid minimum version code (greater than 0)
+- A valid SHA1 signature for the app's certificate
+
+The system will attempt to retrieve missing values from the Aptoide API, but this is not always reliable. The task will report any policies that fail these checks, except for system apps which are exempt.
+
+**Note**: This task is run as part of the CI pipeline. If the system cannot determine the minimum version code or signature for a non-system app, the CI will fail.
 
 ---
 

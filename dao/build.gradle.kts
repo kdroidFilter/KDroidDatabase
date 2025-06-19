@@ -57,7 +57,8 @@ kotlin {
         commonMain.dependencies {
             api(project(":core"))
             implementation(project(":localization"))
-            api(libs.gplay.scrapper.core)
+            api(libs.storekit.gplayscrapper)
+
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kermit)

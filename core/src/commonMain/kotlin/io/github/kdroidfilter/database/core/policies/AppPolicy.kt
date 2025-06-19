@@ -14,6 +14,7 @@ sealed interface AppPolicy {
     val hasUnmodestImage : Boolean
     val isPotentiallyDangerous : Boolean
     val isRecommendedInStore : Boolean
+    val sha1: String
 
     val detectionRules: List<DetectionRule>
 }
