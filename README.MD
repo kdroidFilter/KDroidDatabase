@@ -242,6 +242,8 @@ Use when each user mode has multiple variants, each with its own rules and optio
 6. 📝 **PR title** should clearly state the app package.
 
 > **Note**: For system apps (category `SYSTEM`), the minimum version code and SHA1 signature are not required.
+> 
+> **Important**: If our system cannot determine the minimum version code or signature for a non-system app, the CI will fail. Make sure these values are either provided in the policy file or can be reliably retrieved from the Aptoide API.
 
 CI will reject invalid JSON or misplaced files. Good luck! 🙌
 
@@ -279,6 +281,8 @@ This task verifies that all policy files have:
 - A valid SHA1 signature for the app's certificate
 
 The system will attempt to retrieve missing values from the Aptoide API, but this is not always reliable. The task will report any policies that fail these checks, except for system apps which are exempt.
+
+**Note**: This task is run as part of the CI pipeline. If the system cannot determine the minimum version code or signature for a non-system app, the CI will fail.
 
 ---
 
