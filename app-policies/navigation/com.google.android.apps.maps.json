@@ -1,0 +1,18 @@
+{
+  "type": "Fixed",
+  "packageName": "com.google.android.apps.maps",
+  "category": "NAVIGATION",
+  "networkPolicy": {
+    "mode": "BLACKLIST",
+    "spec": {
+      "type": "HostList",
+      "hosts": [
+        "peoplestack-pa.googleapis.com",
+        "treetviewpixels-pa.googleapis.com",
+        "gz0.googleusercontent.com"
+      ]
+    }
+  },
+  "minimumVersionCode": 0,
+  "isRecommendedInStore": true
+}
