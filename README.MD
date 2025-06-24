@@ -1,6 +1,12 @@
 # 📄 Kdroid Database Policies Contribution Guide
 
+<img src="/assets/header.png" style="border-radius: 10px;"/>
+
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter.database/core)](https://search.maven.org/artifact/io.github.kdroidfilter.database/core)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/kdroidfilter/KDroidDatabase/release-sqlite-db.yml?branch=master)](https://github.com/kdroidfilter/KDroidDatabase/actions/workflows/release-sqlite-db.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/kdroidfilter/KDroidDatabase)](https://github.com/kdroidfilter/KDroidDatabase/releases/latest)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
 ## 📑 Table of Contents
 - [Introduction](#introduction)
