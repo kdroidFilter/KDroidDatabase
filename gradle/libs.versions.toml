@@ -2,8 +2,8 @@
 
 coil = "3.2.0"
 junitJupiterApi = "5.10.1"
-kotlin = "2.1.21"
-agp = "8.9.3"
+kotlin = "2.2.0"
+agp = "8.10.1"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.8.1"
 kermit = "2.0.6"
@@ -19,7 +19,7 @@ sqlDelight = "2.1.0"
 sqlJs = "1.8.0"
 webPackPlugin = "9.1.0"
 kotlinxBrowserWasmJs = "0.3"
-storekit = "0.6.0"
+storekit = "0.8.2"
 
 [libraries]
 
