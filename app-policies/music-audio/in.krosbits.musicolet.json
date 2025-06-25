@@ -1,0 +1,8 @@
+{
+  "type": "Fixed",
+  "packageName": "in.krosbits.musicolet",
+  "category": "MUSIC_AUDIO",
+  "networkPolicy": {
+    "mode": "OFFLINE"
+  }
+}
