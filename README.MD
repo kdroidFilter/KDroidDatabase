@@ -473,6 +473,7 @@ dependencies {
 #### Key Components
 
 - **ApplicationsDao**: Provides methods for loading and searching applications in the database, as well as checking and retrieving recommended applications
+- **CategoriesDao**: Provides methods for retrieving categories and applications by category
 - **VersionDao**: Handles database version management operations
 - **AppInfoWithExtras**: A data class that extends the GooglePlayApplicationInfo model with additional information
 - **Data Consistency Verification**: Utilities to ensure alignment between JSON policy files and database records
@@ -525,6 +526,54 @@ val isRecommended = ApplicationsDao.isRecommendedInStore(
 // Get all applications that are recommended in the store
 val recommendedApps = ApplicationsDao.getRecommendedApplications(
     database = database,
+    deviceLanguage = "en",
+    creator = { id, categoryLocalizedName, appInfo ->
+        AppInfoWithExtras(
+            id = id,
+            categoryLocalizedName = categoryLocalizedName,
+            app = appInfo
+        )
+    }
+)
+
+// Get all categories with localized names
+val categories = CategoriesDao.getAllCategories(
+    database = database,
+    deviceLanguage = "en"
+)
+
+// Get applications by category ID
+val appsByCategoryId = CategoriesDao.getApplicationsByCategoryId(
+    database = database,
+    categoryId = 1,
+    deviceLanguage = "en",
+    creator = { id, categoryLocalizedName, appInfo ->
+        AppInfoWithExtras(
+            id = id,
+            categoryLocalizedName = categoryLocalizedName,
+            app = appInfo
+        )
+    }
+)
+
+// Get applications by category name
+val appsByCategoryName = CategoriesDao.getApplicationsByCategoryName(
+    database = database,
+    categoryName = "NAVIGATION",
+    deviceLanguage = "en",
+    creator = { id, categoryLocalizedName, appInfo ->
+        AppInfoWithExtras(
+            id = id,
+            categoryLocalizedName = categoryLocalizedName,
+            app = appInfo
+        )
+    }
+)
+
+// Get applications by category enum
+val appsByCategory = CategoriesDao.getApplicationsByCategory(
+    database = database,
+    category = AppCategory.NAVIGATION,
     deviceLanguage = "en",
     creator = { id, categoryLocalizedName, appInfo ->
         AppInfoWithExtras(

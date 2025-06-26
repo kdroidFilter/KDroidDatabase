@@ -38,6 +38,7 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
@@ -49,7 +50,6 @@ storekit-aptoide-api = { module = "io.github.kdroidfilter:storekit-aptoide-api",
 storekit-gplayscrapper = { module = "io.github.kdroidfilter:storekit-gplay-scrapper", version.ref = "storekit" }
 storekit-gplaycore = { module ="io.github.kdroidfilter:storekit-gplay-core", version.ref = "storekit" }
 platform-tools-release-fetcher = {module = "io.github.kdroidfilter:platformtools.releasefetcher", version.ref = "platformtools"}
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelight" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
