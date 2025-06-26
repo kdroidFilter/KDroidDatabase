@@ -4,5 +4,6 @@
   "category": "MUSIC_AUDIO",
   "networkPolicy": {
     "mode": "OFFLINE"
-  }
+  },
+  "minimumVersionCode": 0
 }
