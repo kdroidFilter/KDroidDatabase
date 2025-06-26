@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Define release name (once for all steps)
         run: echo "RELEASE_NAME=$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
@@ -48,12 +49,16 @@ jobs:
           ls -l generators/store/build/store-database-he.db
 
       - name: Create and push tag
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@users.noreply.github.com"
-          git fetch --prune 
-          git tag "${{ env.RELEASE_NAME }}" "${{ github.sha }}"
-          git push origin "${{ env.RELEASE_NAME }}"
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${process.env.RELEASE_NAME}`,
+              sha: context.sha
+            })
 
       - name: Create GitHub release and upload artifacts
         uses: softprops/action-gh-release@v2.1.0
