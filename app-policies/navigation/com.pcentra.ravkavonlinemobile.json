@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.pcentra.ravkavonlinemobile",
+  "category": "NAVIGATION",
+  "minimumVersionCode": 0,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  }
+}

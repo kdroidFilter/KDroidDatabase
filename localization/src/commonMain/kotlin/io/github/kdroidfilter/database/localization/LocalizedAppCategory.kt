@@ -51,6 +51,7 @@ object LocalizedAppCategory {
             AppCategory.CUSTOMIZATION -> "Customization"
             AppCategory.MAIL -> "Mail"
             AppCategory.SYSTEM -> "System"
+            AppCategory.GOVERNMENT -> "Government"
         }
     }
 
@@ -83,6 +84,7 @@ object LocalizedAppCategory {
             AppCategory.CUSTOMIZATION -> "התאמה אישית"
             AppCategory.MAIL -> "דואר"
             AppCategory.SYSTEM -> "מערכת"
+            AppCategory.GOVERNMENT -> "ממשלה"
         }
     }
 
@@ -115,6 +117,7 @@ object LocalizedAppCategory {
             AppCategory.CUSTOMIZATION -> "Personnalisation"
             AppCategory.MAIL -> "Courrier"
             AppCategory.SYSTEM -> "Système"
+            AppCategory.GOVERNMENT -> "Gouvernement"
         }
     }
 }

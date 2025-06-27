@@ -1,0 +1,11 @@
+{
+  "type": "Fixed",
+  "packageName": "org.meuhedet.android",
+  "category": "HEALTH_FITNESS",
+  "minimumVersionCode": 292,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "hasUnmodestImage" : true,
+  "sha1" : "db5ded8bacad6b8ec6ac74c4356e313d03ec3bf7"
+}

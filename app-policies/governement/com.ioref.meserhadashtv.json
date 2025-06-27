@@ -1,0 +1,10 @@
+{
+  "type": "Fixed",
+  "packageName": "com.ioref.meserhadashtv",
+  "category": "GOVERNMENT",
+  "minimumVersionCode": 191,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "sha1" : "131c243751d9ea44299c0a97311deee77eb2345e"
+}
