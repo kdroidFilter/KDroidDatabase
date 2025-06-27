@@ -1,0 +1,10 @@
+{
+  "type": "Fixed",
+  "packageName": "com.google.android.keep",
+  "category": "PRODUCTIVITY",
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "minimumVersionCode": 220616879,
+  "sha1" : "38918a453d07199354f8b19af05ec6562ced5788"
+}

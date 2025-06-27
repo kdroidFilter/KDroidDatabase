@@ -1,0 +1,10 @@
+{
+  "type": "Fixed",
+  "packageName": "com.google.android.apps.translate",
+  "category": "PRODUCTIVITY",
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "minimumVersionCode": 699974521,
+  "sha1" : "24bb24c05e47e0aefa68a58a766179d9b613a600"
+}
