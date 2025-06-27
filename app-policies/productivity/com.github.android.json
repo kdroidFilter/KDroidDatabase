@@ -6,5 +6,6 @@
     "mode": "FULL_OPEN"
   },
   "minimumVersionCode": 10257,
-  "sha1" : "75ac713fee04aa0a6d8325af6110e37c47de7698"
+  "sha1" : "75ac713fee04aa0a6d8325af6110e37c47de7698",
+  "isPotentiallyDangerous" : true
 }

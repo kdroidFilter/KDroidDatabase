@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.sonol.mobileapp",
+  "category": "NAVIGATION",
+  "minimumVersionCode": 0,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  }
+}

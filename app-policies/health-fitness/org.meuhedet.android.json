@@ -1,0 +1,10 @@
+{
+  "type": "Fixed",
+  "packageName": "org.meuhedet.android",
+  "category": "HEALTH_FITNESS",
+  "minimumVersionCode": 0,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "hasUnmodestImage" : true
+}

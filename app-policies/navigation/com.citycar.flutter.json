@@ -1,0 +1,10 @@
+{
+  "type": "Fixed",
+  "packageName": "com.citycar.flutter",
+  "category": "NAVIGATION",
+  "minimumVersionCode": 0,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "isRecommendedInStore": true
+}

@@ -24,5 +24,6 @@ enum class AppCategory {
     BUSINESS,
     CUSTOMIZATION,
     MAIL,
-    SYSTEM
+    SYSTEM,
+    GOVERNMENT
 }
