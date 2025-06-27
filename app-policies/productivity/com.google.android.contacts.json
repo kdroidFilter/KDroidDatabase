@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.google.android.contacts",
+  "category": "PRODUCTIVITY",
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "minimumVersionCode": 0
+}
