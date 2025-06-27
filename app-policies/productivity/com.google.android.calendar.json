@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.google.android.calendar",
+  "category": "PRODUCTIVITY",
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "minimumVersionCode": 0
+}

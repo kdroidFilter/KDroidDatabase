@@ -1,0 +1,10 @@
+{
+  "type": "Fixed",
+  "packageName": "com.redalert.tzevaadom",
+  "category": "GOVERNMENT",
+  "minimumVersionCode": 83,
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "sha1" : "65f5b38de052049e90269f5918df8ced643c9d3f"
+}
