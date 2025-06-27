@@ -1,0 +1,10 @@
+{
+  "type": "Fixed",
+  "packageName": "io.homeassistant.companion.android",
+  "category": "TOOLS",
+  "networkPolicy": {
+    "mode": "LOCAL_ONLY"
+  },
+  "minimumVersionCode": 0
+}
+

@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "oyw.tnc",
+  "category": "TORAH",
+  "networkPolicy": {
+    "mode": "OFFLINE"
+  },
+  "minimumVersionCode": 0
+}

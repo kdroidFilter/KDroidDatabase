@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "tfilon.tfilon",
+  "category": "TORAH",
+  "networkPolicy": {
+    "mode": "OFFLINE"
+  },
+  "minimumVersionCode": 0
+}
