@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.google.android.apps.docs.editors.sheets",
+  "category": "PRODUCTIVITY",
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "minimumVersionCode": 0
+}
