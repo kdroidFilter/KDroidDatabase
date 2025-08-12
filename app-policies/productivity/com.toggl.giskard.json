@@ -1,0 +1,9 @@
+{
+  "type": "Fixed",
+  "packageName": "com.toggl.giskard",
+  "category": "PRODUCTIVITY",
+  "networkPolicy": {
+    "mode": "FULL_OPEN"
+  },
+  "minimumVersionCode": 0
+}
