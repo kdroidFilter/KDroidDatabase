@@ -9,7 +9,8 @@
       "type": "HostList",
       "hosts": [
         "*.moovit.com",
-        "*.support.moovitapp.com"
+        "*.support.moovitapp.com",
+        "*.global-attractions.moovit.com"
       ]
     }
   },
