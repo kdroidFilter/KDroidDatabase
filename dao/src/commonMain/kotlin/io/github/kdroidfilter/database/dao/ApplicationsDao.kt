@@ -133,6 +133,31 @@ object ApplicationsDao {
     }
 
     /**
+     * Gets a single application by its package name (appId).
+     * @param database The database instance
+     * @param appId The application ID (package name)
+     * @param deviceLanguage The device language for localized category names
+     * @param creator A function to create the return type from the application data
+     * @return The created object for the application, or null if not found
+     */
+    fun <T> getApplicationByPackageName(
+        database: Database,
+        appId: String,
+        deviceLanguage: String,
+        creator: (Long, String, GooglePlayApplicationInfo) -> T
+    ): T? {
+        val applicationsQueries = database.applicationsQueries
+        val developersQueries = database.developersQueries
+        val categoriesQueries = database.app_categoriesQueries
+
+        val app = applicationsQueries.getApplicationByAppId(appId).executeAsOneOrNull() ?: return null
+        val developer = developersQueries.getDeveloperById(app.developer_id).executeAsOne()
+        val category = categoriesQueries.getCategoryById(app.app_category_id).executeAsOne()
+
+        return createAppInfoWithExtras(app, developer, category, deviceLanguage, creator)
+    }
+
+    /**
      * Checks if an application is recommended in the store
      * @param database The database instance
      * @param appId The application ID (package name)

@@ -2,7 +2,7 @@
 
 coil = "3.2.0"
 junitJupiterApi = "5.10.1"
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 agp = "8.10.1"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.8.1"
