@@ -10,7 +10,15 @@
       "hosts": [
         "*.moovit.com",
         "*.support.moovitapp.com",
-        "*.global-attractions.moovit.com"
+        "*.global-attractions.moovit.com",
+        "moovitapp.zendesk.com",
+        "m.facebook.com",
+        "twitter.com",
+        "video.twimg.com",
+        "x.com",
+        "graph.facebook.com",
+        "googleads.g.doubleclick.net",
+        "facebook.com"
       ]
     }
   },
