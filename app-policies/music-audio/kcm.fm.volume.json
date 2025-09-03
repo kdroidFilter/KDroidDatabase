@@ -1,10 +1,16 @@
 {
-  "type": "Fixed",
-  "packageName": "kcm.fm.volume",
-  "category": "MUSIC_AUDIO",
-  "minimumVersionCode": 30,
-  "networkPolicy": {
-    "mode": "FULL_OPEN"
-  },
-  "sha1" : "e99f8d4f6cf2bfbed8d82b8185931898681aa25c"
+    "packageName": "kcm.fm.volume",
+    "category": "MUSIC_AUDIO",
+    "networkPolicy": {
+        "mode": "BLACKLIST",
+        "spec": {
+            "type": "HostList",
+            "hosts": [
+                "kcm.fm",
+                "connectop.co.il"
+            ]
+        }
+    },
+    "minimumVersionCode": 30,
+    "sha1": "e99f8d4f6cf2bfbed8d82b8185931898681aa25c"
 }
