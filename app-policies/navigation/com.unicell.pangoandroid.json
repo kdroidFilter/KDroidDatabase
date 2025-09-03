@@ -9,7 +9,9 @@
       "hosts": [
         "*.pango.co.il",
         "bit.ly",
-        "pango-global-fun.pango.co.il"
+        "pango-global-fun.pango.co.il",
+        "pango.world8.co.il",
+        "pango-stage.skygini.com"
       ]
     }
   },
