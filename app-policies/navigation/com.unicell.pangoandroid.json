@@ -8,7 +8,8 @@
       "type": "HostList",
       "hosts": [
         "*.pango.co.il",
-        "bit.ly"
+        "bit.ly",
+        "pango-global-fun.pango.co.il"
       ]
     }
   },
