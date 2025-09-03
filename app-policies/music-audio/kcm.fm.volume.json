@@ -2,12 +2,14 @@
     "packageName": "kcm.fm.volume",
     "category": "MUSIC_AUDIO",
     "networkPolicy": {
-        "mode": "BLACKLIST",
+        "mode": "WHITELIST",
         "spec": {
             "type": "HostList",
             "hosts": [
                 "kcm.fm",
-                "connectop.co.il"
+                "media.kcm.fm",
+                "live.kcm.fm",
+                "firebaselogging-pa.googleapis.com"
             ]
         }
     },
