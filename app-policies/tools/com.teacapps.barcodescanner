@@ -1,0 +1,13 @@
+{
+  "type": "Fixed",
+  "packageName": "com.teacapps.barcodescanner",
+  "category": "TOOLS",
+  "minimumVersionCode": 147,
+  "networkPolicy": {
+    "mode": "WHITELIST",
+    "spec": {
+      "type": "HostList",
+      "hosts": []
+    }
+  }
+}
