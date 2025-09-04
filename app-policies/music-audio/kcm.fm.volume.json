@@ -1,4 +1,5 @@
 {
+    "type": "Fixed",
     "packageName": "kcm.fm.volume",
     "category": "MUSIC_AUDIO",
     "networkPolicy": {

@@ -19,7 +19,7 @@ sqlDelight = "2.1.0"
 sqlJs = "1.8.0"
 webPackPlugin = "9.1.0"
 kotlinxBrowserWasmJs = "0.3"
-storekit = "0.8.2"
+storekit = "0.9.0"
 
 [libraries]
 

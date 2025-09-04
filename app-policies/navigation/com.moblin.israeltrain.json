@@ -1,8 +1,8 @@
 {
   "type": "Fixed",
-  "packageName": "com.sonol.mobileapp",
+  "packageName": "com.moblin.israeltrain",
   "category": "NAVIGATION",
-  "minimumVersionCode": 0,
+  "minimumVersionCode": 1435123456,
   "networkPolicy": {
     "mode": "FULL_OPEN"
   }
