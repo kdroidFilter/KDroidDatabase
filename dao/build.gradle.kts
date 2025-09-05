@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.sqlite.jdbc)
             implementation(libs.maven.slf4j.provider)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.sqldelight.sqlite.driver)
         }
 
         jvmTest.dependencies {
@@ -57,6 +58,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":core"))
             implementation(project(":localization"))
+            implementation(project(":downloader"))
             api(libs.storekit.gplayscrapper)
 
             implementation(libs.kotlinx.coroutines.core)

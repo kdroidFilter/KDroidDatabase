@@ -45,6 +45,10 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
+import io.github.kdroidfilter.database.driver.createSqlDriver
+import io.github.kdroidfilter.database.driver.getDatabasePath
+import io.github.kdroidfilter.database.driver.getDeviceLanguage
+import io.github.kdroidfilter.database.utils.DatabaseUtils as LibDatabaseUtils
 import io.github.kdroidfilter.database.dao.ApplicationsDao
 import io.github.kdroidfilter.database.dao.AppInfoWithExtras
 import io.github.kdroidfilter.database.downloader.DatabaseDownloader
@@ -52,9 +56,6 @@ import sample.app.ui.AppDetailDialog
 import sample.app.ui.AppRow
 import sample.app.ui.SearchScreen
 
-expect fun createSqlDriver(): SqlDriver
-expect fun getDatabasePath(): Path
-expect fun getDeviceLanguage(): String
 
 enum class Screen {
     Home,
@@ -138,7 +139,7 @@ fun App() {
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        text = "DB: ${getDatabasePath().fileName}",
+                        text = "DB: ${getDatabasePath().substringAfterLast('/')}",
                         style = MaterialTheme.typography.bodySmall,
                         fontSize = 10.sp
                     )
@@ -151,14 +152,14 @@ fun App() {
                                 try {
                                     withContext(Dispatchers.IO) {
                                         // Check if database version is up to date
-                                        val isUpToDate = sample.app.utils.isDatabaseVersionUpToDate(database)
+                                        val isUpToDate = LibDatabaseUtils.isDatabaseVersionUpToDate(database)
 
                                         // If not up to date, download the new version
                                         if (!isUpToDate) {
                                             logger.i { "Database is not up to date. Downloading new version..." }
                                             val downloader = DatabaseDownloader()
                                             val success = downloader.downloadLatestStoreDatabaseForLanguage(
-                                                getDatabasePath().parent.toString(), 
+                                                getDatabasePath().substringBeforeLast('/', missingDelimiterValue = "."), 
                                                 getDeviceLanguage()
                                             )
 
