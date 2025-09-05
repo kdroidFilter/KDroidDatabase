@@ -44,13 +44,11 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.sqldelight.sqlite.driver)
 
         }
 
         androidMain.dependencies {
             implementation(libs.androidx.activityCompose)
-            implementation(libs.sqldelight.android.driver)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.netfreetools.certificates)
 

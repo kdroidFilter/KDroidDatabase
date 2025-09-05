@@ -159,8 +159,8 @@ fun App() {
                                             logger.i { "Database is not up to date. Downloading new version..." }
                                             val downloader = DatabaseDownloader()
                                             val success = downloader.downloadLatestStoreDatabaseForLanguage(
-                                                getDatabasePath().substringBeforeLast('/', missingDelimiterValue = "."), 
-                                                getDeviceLanguage()
+                                                outputDir = getDatabasePath().substringBeforeLast('/', missingDelimiterValue = "."),
+                                                language = getDeviceLanguage()
                                             )
 
                                             if (success) {
