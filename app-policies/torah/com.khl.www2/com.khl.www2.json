@@ -1,0 +1,13 @@
+{
+  "type": "Fixed",
+  "packageName": "com.khl.www2",
+  "category": "TORAH",
+  "networkPolicy": {
+    "mode": "WHITELIST",
+    "spec": {
+      "type": "HostList",
+      "hosts": ["www2.kolhalashon.com", "srv.kolhalashon.com", "media2.kolhalashon.com"]
+    }
+  },
+  "minimumVersionCode": 0
+}
