@@ -24,13 +24,7 @@ kotlin {
     androidTarget { publishLibraryVariants("release") }
     jvm()
     wasmJs { browser() }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    mingwX64()
-    linuxX64()
-    macosX64()
-    macosArm64()
+
 
     sourceSets {
         commonMain.dependencies {
