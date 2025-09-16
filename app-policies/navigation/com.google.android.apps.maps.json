@@ -1,18 +1,68 @@
 {
-  "type": "Fixed",
+  "type": "MultiMode",
   "packageName": "com.google.android.apps.maps",
   "category": "NAVIGATION",
-  "networkPolicy": {
-    "mode": "BLACKLIST",
-    "spec": {
-      "type": "HostList",
-      "hosts": [
-        "peoplestack-pa.googleapis.com",
-        "treetviewpixels-pa.googleapis.com",
-        "gz0.googleusercontent.com"
-      ]
+  "minimumVersionCode": 1068205141,
+  "sha1": "bd32424203e0fb25f36b57e5aa356f9bdd1da998",
+  "modeVariants": [
+    {
+      "userMode": "REDUCED_RISK",
+      "variants": [
+        {
+          "id": "standard_blocked",
+          "label": "Standard navigation (Street View blocked)",
+          "policy": {
+            "mode": "BLACKLIST",
+            "spec": {
+              "type": "HostList",
+              "hosts": [
+                "*.googleusercontent.com",
+                "*.googlevideo.com",
+                "s.youtube.com",
+                "streetviewpixels-pa.googleapis.com"
+              ]
+            }
+          }
+        }
+      ],
+      "defaultVariantId": "standard_blocked"
+    },
+    {
+      "userMode": "MOST_OPEN",
+      "variants": [
+        {
+          "id": "with_streetview",
+          "label": "Full navigation with Street View",
+          "policy": {
+            "mode": "BLACKLIST",
+            "spec": {
+              "type": "HostList",
+              "hosts": [
+                "*.googleusercontent.com",
+                "*.googlevideo.com",
+                "s.youtube.com"
+              ]
+            }
+          }
+        },
+        {
+          "id": "without_streetview",
+          "label": "Navigation without Street View",
+          "policy": {
+            "mode": "BLACKLIST",
+            "spec": {
+              "type": "HostList",
+              "hosts": [
+                "*.googleusercontent.com",
+                "*.googlevideo.com",
+                "s.youtube.com",
+                "streetviewpixels-pa.googleapis.com"
+              ]
+            }
+          }
+        }
+      ],
+      "defaultVariantId": "with_streetview"
     }
-  },
-  "minimumVersionCode": 0,
-  "isRecommendedInStore": true
+  ]
 }
