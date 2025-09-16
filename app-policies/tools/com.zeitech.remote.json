@@ -1,0 +1,15 @@
+{
+    "type": "Fixed",
+    "packageName": "com.zeitech.remote",
+    "category": "TOOLS",
+    "networkPolicy": {
+        "mode": "WHITELIST",
+        "spec": {
+            "type": "HostList",
+            "hosts": [
+                "r.zeitech.co.il"
+            ]
+        }
+    },
+    "minimumVersionCode": 0
+}
